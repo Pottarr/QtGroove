@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#include <QFileDialog>
+#include <QUrl>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +21,21 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_openFile_clicked();
+
+    void on_pauseButton_clicked();
+
+    void on_stopButton_clicked();
+
+    void on_restartButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    void detectMusic(int value);
+    QMediaPlayer* player = new QMediaPlayer;
+    QAudioOutput* audio = new QAudioOutput;
+    QUrl currentFile;
+    bool playing;
 };
 #endif // MAINWINDOW_H
