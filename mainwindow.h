@@ -30,6 +30,10 @@ private slots:
 
     void on_restartButton_clicked();
 
+    void on_previousButton_clicked();
+
+    void on_nextButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     void detectMusic(int value);

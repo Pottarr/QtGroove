@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QStyle>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
+    ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::detectMusic);
 }
 
@@ -37,11 +39,14 @@ void MainWindow::on_pauseButton_clicked()
 {
     if (playing)
     {
+        ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
         player->pause();
+
         playing = false;
     }
     else
     {
+        ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
         player->play();
         playing = true;
     }
@@ -60,5 +65,17 @@ void MainWindow::on_restartButton_clicked()
     player->setPosition(0);
     player->play();
     playing = true;
+}
+
+
+void MainWindow::on_previousButton_clicked()
+{
+    return;
+}
+
+
+void MainWindow::on_nextButton_clicked()
+{
+    return;
 }
 
