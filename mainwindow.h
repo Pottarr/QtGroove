@@ -24,7 +24,7 @@ public:
 private slots:
     void on_openFile_clicked();
 
-    void on_pauseButton_clicked();
+    void on_playButton_clicked();
 
     void on_stopButton_clicked();
 
@@ -34,12 +34,20 @@ private slots:
 
     void on_nextButton_clicked();
 
+    void on_songProgressBar_valueChanged(int value);
+
+    void on_songProgressBar_sliderPressed();
+
+    void on_songProgressBar_sliderReleased();
+
 private:
     Ui::MainWindow *ui;
-    void detectMusic(int value);
     QMediaPlayer* player = new QMediaPlayer;
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
     bool playing;
+    int previousSecond = 0;
+
+    void changePlayButtonIcon(bool);
 };
 #endif // MAINWINDOW_H

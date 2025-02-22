@@ -9,8 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
-    ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::detectMusic);
+    ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
+    connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
 }
 
 MainWindow::~MainWindow()
@@ -29,24 +30,15 @@ void MainWindow::on_openFile_clicked()
     }
 }
 
-void MainWindow::detectMusic(int value)
-{
-    qDebug() << value;
-}
-
-
-void MainWindow::on_pauseButton_clicked()
+void MainWindow::on_playButton_clicked()
 {
     if (playing)
     {
-        ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
         player->pause();
-
         playing = false;
     }
     else
     {
-        ui->pauseButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
         player->play();
         playing = true;
     }
@@ -70,12 +62,41 @@ void MainWindow::on_restartButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
-    return;
+
 }
 
 
 void MainWindow::on_nextButton_clicked()
 {
-    return;
+
+}
+
+
+void MainWindow::on_songProgressBar_valueChanged(int value)
+{
+    if (ui->songProgressBar->maximum() != player->duration())
+    {
+        ui->songProgressBar->setMaximum(player->duration());
+    }
+    ui->songProgressBar->setValue(value);
+    ui->songProgressBar->setSliderPosition(ui->songProgressBar->value());
+}
+
+
+void MainWindow::on_songProgressBar_sliderPressed()
+{
+    player->pause();
+}
+
+
+void MainWindow::on_songProgressBar_sliderReleased()
+{
+    player->setPosition(ui->songProgressBar->value());
+    player->play();
+}
+
+void MainWindow::changePlayButtonIcon(bool playing)
+{
+    playing ? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause)) : ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
