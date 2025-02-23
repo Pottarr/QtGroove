@@ -1,8 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QObject>
 #include <QMainWindow>
 #include <QMediaPlayer>
+#include <QMediaMetaData>
 #include <QAudioOutput>
 #include <QFileDialog>
 #include <QUrl>
@@ -40,14 +42,24 @@ private slots:
 
     void on_songProgressBar_sliderReleased();
 
+    void on_volumeSlider_valueChanged(int value);
+
+
+
 private:
     Ui::MainWindow *ui;
-    QMediaPlayer* player = new QMediaPlayer;
+    QMediaPlayer* player = new QMediaPlayer(this);
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
-    bool playing;
+    bool playing = false;
     int previousSecond = 0;
 
     void changePlayButtonIcon(bool);
+
+    QString getSongWholeDuration();
+
+    QString getSongCurrentDuration();
+
+    QString getSongLeftDuration();
 };
 #endif // MAINWINDOW_H
