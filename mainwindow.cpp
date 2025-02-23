@@ -12,6 +12,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
     connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
+    connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
+    {
+        if (status == QMediaPlayer::LoadedMedia)
+        {
+            ui->wholeSongDuration->setText(getSongWholeDuration());
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -28,14 +35,8 @@ void MainWindow::on_openFile_clicked()
         player->play();
         playing = true;
 
-        connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
-        {
-            if (status == QMediaPlayer::LoadedMedia)
-            {
-                ui->wholeSongDuration->setText(getSongWholeDuration());
-            }
-        });
-
+        ui->songInfo->setText(QString("Now Playing: %1").arg(currentFile.fileName()));
+        ui->songInfo->adjustSize();
     }
 }
 
@@ -87,16 +88,19 @@ void MainWindow::on_songProgressBar_valueChanged(int value)
     {
         ui->songProgressBar->setMaximum(player->duration());
     }
+    ui->songProgressBar->setValue(value);
     ui->songProgressBar->setSliderPosition(ui->songProgressBar->value());
+    ui->untilEndDuration->setText(getSongLeftDuration(value));
+    ui->currentDuration->setText(getSongCurrentDuration(value));
 
-    connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
-        ui->songProgressBar->setValue(position);
-        ui->currentDuration->setText(getSongCurrentDuration());
-    });
+    // connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
+    //     ui->songProgressBar->setValue(position);
+    //     ui->currentDuration->setText(getSongCurrentDuration());
+    // });
 
-    connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
-        ui->untilEndDuration->setText(getSongLeftDuration());
-    });
+    // connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
+    //     ui->untilEndDuration->setText(getSongLeftDuration());
+    // });
 }
 
 
@@ -138,10 +142,10 @@ QString MainWindow::getSongWholeDuration()
     return result;
 }
 
-QString MainWindow::getSongCurrentDuration()
+QString MainWindow::getSongCurrentDuration(int value)
 {
     QString result;
-    int currentDurMS = player->position();
+    int currentDurMS = value;
 
     int min = currentDurMS / 60000;
     int sec = (currentDurMS % 60000) / 1000;
@@ -157,12 +161,12 @@ QString MainWindow::getSongCurrentDuration()
 
     return result;
 }
-QString MainWindow::getSongLeftDuration()
+QString MainWindow::getSongLeftDuration(int value)
 {
     QString result;
 
     int wholeDurMS = player->duration();
-    int currentDurMS = player->position();
+    int currentDurMS = value;
     int leftDurMS = wholeDurMS - currentDurMS;
 
     int min = leftDurMS / 60000;

@@ -58,8 +58,8 @@ private:
 
     QString getSongWholeDuration();
 
-    QString getSongCurrentDuration();
+    QString getSongCurrentDuration(int);
 
-    QString getSongLeftDuration();
+    QString getSongLeftDuration(int);
 };
 #endif // MAINWINDOW_H
