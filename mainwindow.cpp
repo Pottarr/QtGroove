@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
-    ui->horizontalSlider->setValue(20);
-    ui->horizontalSlider->setSliderPosition(20);
+    ui->volumeSlider->setValue(20);
+    ui->volumeSlider->setSliderPosition(20);
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
