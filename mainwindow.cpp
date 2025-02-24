@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
+    ui->volumeSlider->setValue(20);
+    ui->volumeSlider->setSliderPosition(20);
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
     connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
@@ -35,8 +37,8 @@ void MainWindow::on_openFile_clicked()
         player->play();
         playing = true;
 
-        ui->songInfo->setText(QString("Now Playing: %1").arg(currentFile.fileName()));
-        ui->songInfo->adjustSize();
+        ui->nowPlayingLabel->setText(QString("Now Playing: %1").arg(currentFile.fileName()));
+        ui->nowPlayingLabel->adjustSize();
     }
 }
 
@@ -186,5 +188,5 @@ QString MainWindow::getSongLeftDuration(int value)
 
 void MainWindow::on_volumeSlider_valueChanged(int value)
 {
-
+    audio->setVolume(static_cast<float>(value)/100.0);
 }
