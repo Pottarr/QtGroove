@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
-    <height>628</height>
+    <width>900</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>450</y>
+      <y>420</y>
       <width>80</width>
       <height>25</height>
      </rect>
@@ -37,9 +37,9 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>480</y>
-      <width>901</width>
-      <height>101</height>
+      <y>450</y>
+      <width>900</width>
+      <height>110</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -57,7 +57,7 @@
        <x>0</x>
        <y>0</y>
        <width>901</width>
-       <height>100</height>
+       <height>106</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -67,6 +67,9 @@
          <widget class="QLabel" name="nowPlayingLabel">
           <property name="text">
            <string/>
+          </property>
+          <property name="indent">
+           <number>-1</number>
           </property>
          </widget>
         </item>
@@ -99,7 +102,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="volumeSlider">
+         <widget class="QSlider" name="horizontalSlider">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -111,9 +114,6 @@
             <width>0</width>
             <height>0</height>
            </size>
-          </property>
-          <property name="maximum">
-           <number>100</number>
           </property>
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
@@ -264,37 +264,15 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QLabel" name="songInfo">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>450</y>
-      <width>181</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft</set>
-    </property>
-   </widget>
+   <zorder>controlPanelFrame</zorder>
+   <zorder>openFile</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>902</width>
+     <width>900</width>
      <height>21</height>
     </rect>
    </property>

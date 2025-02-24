@@ -9,9 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
-    ui->volumeSlider->setValue(20);
-    ui->volumeSlider->setSliderPosition(20);
+    ui->horizontalSlider->setValue(20);
+    ui->horizontalSlider->setSliderPosition(20);
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    ui->stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
     connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
     connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
@@ -126,20 +127,12 @@ void MainWindow::changePlayButtonIcon(bool playing)
 QString MainWindow::getSongWholeDuration()
 {
     QString result;
-    // int wholeDurMS = player->metaData().value(QMediaMetaData::Duration).toInt();
     int wholeDurMS = player->duration();
 
     int min = wholeDurMS / 60000;
     int sec = (wholeDurMS % 60000) / 1000;
 
-    if (sec / 10 == 0)
-    {
-        result = QString("%1:0%2").arg(QString::number(min), QString::number(sec));
-    }
-    else
-    {
-        result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
-    }
+    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
 
     return result;
 }
@@ -152,14 +145,7 @@ QString MainWindow::getSongCurrentDuration(int value)
     int min = currentDurMS / 60000;
     int sec = (currentDurMS % 60000) / 1000;
 
-    if (sec / 10 == 0)
-    {
-        result = QString("%1:0%2").arg(QString::number(min), QString::number(sec));
-    }
-    else
-    {
-        result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
-    }
+    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
 
     return result;
 }
@@ -174,14 +160,7 @@ QString MainWindow::getSongLeftDuration(int value)
     int min = leftDurMS / 60000;
     int sec = ((leftDurMS% 60000) / 1000);
 
-    if (sec / 10 == 0)
-    {
-        result = QString("%1:0%2").arg(QString::number(min), QString::number(sec));
-    }
-    else
-    {
-        result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
-    }
+    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
 
     return result;
 }
