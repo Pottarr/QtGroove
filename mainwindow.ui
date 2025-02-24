@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="openFile">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>150</x>
       <y>420</y>
       <width>80</width>
       <height>25</height>
@@ -60,9 +60,9 @@
        <height>106</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="controlPamelLayout">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="controlTop">
         <item>
          <widget class="QLabel" name="nowPlayingLabel">
           <property name="text">
@@ -123,7 +123,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
+       <layout class="QHBoxLayout" name="controlMiddle">
         <item>
          <widget class="QPushButton" name="previousButton">
           <property name="font">
@@ -210,7 +210,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="controlBottom">
         <item>
          <widget class="QPushButton" name="stopButton">
           <property name="font">
@@ -264,8 +264,55 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QPushButton" name="createPlaylist">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>420</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Create Playlist</string>
+    </property>
+   </widget>
+   <widget class="QScrollArea" name="playlistSlot">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>150</width>
+      <height>450</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(75, 75, 75);</string>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>148</width>
+       <height>448</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
    <zorder>controlPanelFrame</zorder>
    <zorder>openFile</zorder>
+   <zorder>createPlaylist</zorder>
+   <zorder>playlistSlot</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

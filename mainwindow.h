@@ -8,6 +8,7 @@
 #include <QAudioOutput>
 #include <QFileDialog>
 #include <QUrl>
+#include <QSqlDatabase>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,8 +23,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void createPlaylist(const QString&);
+
 
 private slots:
+
     void on_openFile_clicked();
 
     void on_playButton_clicked();
@@ -44,10 +48,11 @@ private slots:
 
     void on_volumeSlider_valueChanged(int value);
 
-
+    void on_createPlaylist_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     QMediaPlayer* player = new QMediaPlayer(this);
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
@@ -61,5 +66,9 @@ private:
     QString getSongCurrentDuration(int);
 
     QString getSongLeftDuration(int);
+
+    void createDBFile();
+
+    void refresh();
 };
 #endif // MAINWINDOW_H

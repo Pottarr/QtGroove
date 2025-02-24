@@ -1,11 +1,15 @@
 #include "mainwindow.h"
+#include "createplaylistdialog.h"
 #include "./ui_mainwindow.h"
 #include <QStyle>
+#include <QFile>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    createDBFile();
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
@@ -27,6 +31,20 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::createDBFile()
+{
+    if (!QFile::exists("./db/playlist.db"))
+    {
+        QDir().mkpath("./db");
+    }
+    db.setDatabaseName("./db/plalist.db");
+
+    if (db.open())
+    {
+        qDebug("Opened playlist.db");
+    }
 }
 
 void MainWindow::on_openFile_clicked()
@@ -168,4 +186,29 @@ QString MainWindow::getSongLeftDuration(int value)
 void MainWindow::on_volumeSlider_valueChanged(int value)
 {
     audio->setVolume(static_cast<float>(value)/100.0);
+}
+
+
+
+
+// Refreash some part of the program (NOT THE PLAYER AND CONTROL PANEL) after SQL EXEC
+// void MainWindow::refresh()
+// {
+
+
+
+void MainWindow::on_createPlaylist_clicked()
+{
+    CreatePlaylistDialog* dialog = new CreatePlaylistDialog(this);
+
+    connect(dialog, &CreatePlaylistDialog::playlistCreated, this, &MainWindow::createPlaylist);
+
+    dialog->exec();
+
+}
+
+void MainWindow::createPlaylist(const QString& playlistName)
+{
+    QString result = QString("Created playlist named: %1").arg(playlistName);
+    qDebug() << result;
 }
