@@ -1,6 +1,5 @@
 #include "createplaylistdialog.h"
 #include "ui_createplaylistdialog.h"
-#include "mainwindow.h"
 
 CreatePlaylistDialog::CreatePlaylistDialog(QWidget *parent)
     : QDialog(parent)
@@ -24,5 +23,11 @@ void CreatePlaylistDialog::on_submitButton_clicked()
     emit playlistCreated(playlistName);
     this->close();
 
+}
+
+
+void CreatePlaylistDialog::on_cancelButton_clicked()
+{
+    this->close();
 }
 

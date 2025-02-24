@@ -21,6 +21,8 @@ signals:
 private slots:
     void on_submitButton_clicked();
 
+    void on_cancelButton_clicked();
+
 private:
     Ui::CreatePlaylistDialog *ui;
     QString playlistName;
