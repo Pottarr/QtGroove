@@ -41,7 +41,7 @@ void MainWindow::createDBFile()
     {
         QDir().mkpath("./db");
     }
-    db.setDatabaseName("./db/plalist.db");
+    db.setDatabaseName("./db/playlist.db");
 
     if (db.open())
     {
