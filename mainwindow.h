@@ -9,6 +9,10 @@
 #include <QFileDialog>
 #include <QUrl>
 #include <QSqlDatabase>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QWidget>
+#include "clickablelabel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -56,8 +60,9 @@ private:
     QMediaPlayer* player = new QMediaPlayer(this);
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
+    QVBoxLayout* playlistSlot;
+    std::vector<ClickableLabel*> playlistVec;
     bool playing = false;
-    int previousSecond = 0;
 
     void changePlayButtonIcon(bool);
 
@@ -70,5 +75,7 @@ private:
     void createDBFile();
 
     void refresh();
+
+    void playlistClicked(QUrl path, QString type);
 };
 #endif // MAINWINDOW_H

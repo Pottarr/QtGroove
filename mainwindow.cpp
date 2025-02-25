@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     createDBFile();
     ui->setupUi(this);
+    playlistSlot = new QVBoxLayout(ui->scrollAreaWidgetContents);
+    playlistSlot->setSizeConstraint(QLayout::SetFixedSize);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
     ui->volumeSlider->setValue(20);
@@ -113,15 +115,6 @@ void MainWindow::on_songProgressBar_valueChanged(int value)
     ui->songProgressBar->setSliderPosition(ui->songProgressBar->value());
     ui->untilEndDuration->setText(getSongLeftDuration(value));
     ui->currentDuration->setText(getSongCurrentDuration(value));
-
-    // connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
-    //     ui->songProgressBar->setValue(position);
-    //     ui->currentDuration->setText(getSongCurrentDuration());
-    // });
-
-    // connect(player, &QMediaPlayer::positionChanged, this, [this](qint64 position) {
-    //     ui->untilEndDuration->setText(getSongLeftDuration());
-    // });
 }
 
 
@@ -209,6 +202,22 @@ void MainWindow::on_createPlaylist_clicked()
 
 void MainWindow::createPlaylist(const QString& playlistName)
 {
-    QString result = QString("Created playlist named: %1").arg(playlistName);
-    qDebug() << result;
+    // QString result = QString("Created playlist named: %1").arg(playlistName);
+    QWidget* w = new QWidget;
+    QVBoxLayout* v = new QVBoxLayout(w);
+    v->setSizeConstraint(QLayout::SetMinimumSize);
+    ClickableLabel* playlistLabel = new ClickableLabel(playlistName);
+    playlistLabel->setAutoFillBackground(true);
+    connect(playlistLabel, &ClickableLabel::clicked, this, &MainWindow::playlistClicked);
+    playlistVec.push_back(playlistLabel);
+    v->addWidget(playlistLabel);
+    playlistSlot->addWidget(w);
+}
+
+void MainWindow::playlistClicked(QUrl path, QString type)
+{
+    for (auto label : playlistVec)
+    {
+        label->setStyleSheet("");
+    }
 }

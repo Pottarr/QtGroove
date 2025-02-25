@@ -283,7 +283,7 @@
      <string>Create Playlist</string>
     </property>
    </widget>
-   <widget class="QScrollArea" name="playlistSlot">
+   <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -312,7 +312,7 @@
    <zorder>controlPanelFrame</zorder>
    <zorder>openFile</zorder>
    <zorder>createPlaylist</zorder>
-   <zorder>playlistSlot</zorder>
+   <zorder>scrollArea</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -320,7 +320,7 @@
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
