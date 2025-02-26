@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     createDBFile();
     ui->setupUi(this);
-    playlistSlot = new QVBoxLayout(ui->scrollAreaWidgetContents);
-    playlistSlot->setSizeConstraint(QLayout::SetFixedSize);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
     ui->volumeSlider->setValue(20);
@@ -203,15 +201,17 @@ void MainWindow::on_createPlaylist_clicked()
 void MainWindow::createPlaylist(const QString& playlistName)
 {
     // QString result = QString("Created playlist named: %1").arg(playlistName);
-    QWidget* w = new QWidget;
-    QVBoxLayout* v = new QVBoxLayout(w);
-    v->setSizeConstraint(QLayout::SetMinimumSize);
     ClickableLabel* playlistLabel = new ClickableLabel(playlistName);
     playlistLabel->setAutoFillBackground(true);
+    playlistLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    playlistLabel->setFixedWidth(120);
+    playlistLabel->setFixedHeight(30);
+    QFont font("Sans Serif", 10);
+    font.setBold(true);
+    playlistLabel->setFont(font);
     connect(playlistLabel, &ClickableLabel::clicked, this, &MainWindow::playlistClicked);
     playlistVec.push_back(playlistLabel);
-    v->addWidget(playlistLabel);
-    playlistSlot->addWidget(w);
+    ui->playlistSlot->addWidget(playlistLabel);
 }
 
 void MainWindow::playlistClicked(QUrl path, QString type)

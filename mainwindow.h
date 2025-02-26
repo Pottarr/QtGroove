@@ -60,7 +60,6 @@ private:
     QMediaPlayer* player = new QMediaPlayer(this);
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
-    QVBoxLayout* playlistSlot;
     std::vector<ClickableLabel*> playlistVec;
     bool playing = false;
 
