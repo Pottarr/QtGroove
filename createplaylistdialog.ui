@@ -123,6 +123,11 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>playlistNameInput</tabstop>
+  <tabstop>submitButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

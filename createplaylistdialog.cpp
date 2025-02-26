@@ -6,6 +6,7 @@ CreatePlaylistDialog::CreatePlaylistDialog(QWidget *parent)
     , ui(new Ui::CreatePlaylistDialog)
 {
     ui->setupUi(this);
+    ui->playlistNameInput->setFocus();
     // connect(this, &CreatePlaylistDialog::on_pushButton_clicked, parent, [this, parent]()
     // {
         // parent->createPlaylist(this->playlistName);
