@@ -12,7 +12,9 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
-#include "clickablelabel.h"
+#include <QListWidgetItem>
+#include <QSqlQuery>
+#include <QSqlError>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -54,13 +56,20 @@ private slots:
 
     void on_createPlaylist_clicked();
 
+    void on_playlistSlot_itemClicked(QListWidgetItem *item);
+
+    void on_playlistSlot_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_addSongs_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    QSqlQuery query;
     QMediaPlayer* player = new QMediaPlayer(this);
     QAudioOutput* audio = new QAudioOutput;
     QUrl currentFile;
-    std::vector<ClickableLabel*> playlistVec;
+    QString currentPlaylist;
     bool playing = false;
 
     void changePlayButtonIcon(bool);
@@ -75,6 +84,6 @@ private:
 
     bool checkTableExist(QString playlistName);
 
-    void playlistClicked(QUrl path, QString type);
+    void initializePlaylist();
 };
 #endif // MAINWINDOW_H

@@ -57,7 +57,7 @@
        <x>0</x>
        <y>0</y>
        <width>901</width>
-       <height>106</height>
+       <height>142</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="controlPamelLayout">
@@ -65,8 +65,26 @@
        <layout class="QHBoxLayout" name="controlTop">
         <item>
          <widget class="QLabel" name="nowPlayingLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
           <property name="indent">
            <number>-1</number>
@@ -283,54 +301,72 @@
      <string>Create Playlist</string>
     </property>
    </widget>
-   <widget class="QScrollArea" name="scrollArea">
+   <widget class="QListWidget" name="playlistSlot">
     <property name="geometry">
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>150</width>
-      <height>450</height>
+      <width>141</width>
+      <height>451</height>
      </rect>
     </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(75, 75, 75);</string>
+    <property name="autoFillBackground">
+     <bool>false</bool>
     </property>
-    <property name="widgetResizable">
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(67, 67, 67);
+color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="dragEnabled">
      <bool>true</bool>
     </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>148</width>
-       <height>448</height>
-      </rect>
-     </property>
-     <widget class="QWidget" name="verticalLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>131</width>
-        <height>431</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="playlistSlot">
-       <property name="spacing">
-        <number>2</number>
-       </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SizeConstraint::SetFixedSize</enum>
-       </property>
-      </layout>
-     </widget>
-    </widget>
+    <property name="alternatingRowColors">
+     <bool>false</bool>
+    </property>
+    <property name="spacing">
+     <number>2</number>
+    </property>
+    <property name="currentRow">
+     <number>-1</number>
+    </property>
    </widget>
+   <widget class="QPushButton" name="addSongs">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>420</y>
+      <width>141</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Add Songs To Playlist</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="songSlot">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>0</y>
+      <width>761</width>
+      <height>451</height>
+     </rect>
+    </property>
+   </widget>
+   <zorder>songSlot</zorder>
    <zorder>controlPanelFrame</zorder>
    <zorder>openFile</zorder>
    <zorder>createPlaylist</zorder>
-   <zorder>scrollArea</zorder>
+   <zorder>playlistSlot</zorder>
+   <zorder>addSongs</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

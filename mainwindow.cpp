@@ -4,8 +4,6 @@
 #include <QStyle>
 #include <QFile>
 #include <QDir>
-#include <QSqlQuery>
-#include <QSqlError>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     createDBFile();
 
     ui->setupUi(this);
+    initializePlaylist();
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
     ui->volumeSlider->setValue(20);
@@ -37,6 +36,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::initializePlaylist()
+{
+    query.exec("SELECT * FROM playlists;");
+    while (query.next())
+    {
+        QListWidgetItem* item = new QListWidgetItem;
+        item->setText(query.value(0).toString());
+        QFont font("Sans Serif", 10);
+        font.setBold(true);
+        item->setFont(font);
+        item->setTextAlignment(Qt::AlignHCenter);
+        ui->playlistSlot->addItem(item);
+    }
+}
+
 void MainWindow::createDBFile()
 {
     if (!QFile::exists("./db/playlist.db"))
@@ -48,6 +62,7 @@ void MainWindow::createDBFile()
     if (db.open())
     {
         qDebug("Opened playlist.db");
+        query.exec("CREATE TABLE IF NOT EXISTS playlists (name TEXT PRIMARY KEY NOT NULL);");
     }
     else
     {
@@ -64,7 +79,7 @@ void MainWindow::on_openFile_clicked()
         player->play();
         playing = true;
 
-        ui->nowPlayingLabel->setText(QString("Now Playing: %1").arg(currentFile.fileName()));
+        ui->nowPlayingLabel->setText(currentFile.fileName());
         ui->nowPlayingLabel->adjustSize();
     }
 }
@@ -208,7 +223,6 @@ void MainWindow::on_createPlaylist_clicked()
 
 bool MainWindow::checkTableExist(QString playlistName)
 {
-    QSqlQuery query(db);
     query.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=:tableName;");
     query.bindValue(":tableName", playlistName);
 
@@ -224,9 +238,8 @@ bool MainWindow::checkTableExist(QString playlistName)
 void MainWindow::createPlaylist(const QString& playlistName)
 {
 
-    if (!checkTableExist(playlistName))
+    if (!checkTableExist(playlistName) && playlistName != QString(""))
     {
-        QSqlQuery query;
         QString createTableQueryCommand = QString("CREATE TABLE %1 ("
                                                   "song_path TEXT PRIMARY KEY, "
                                                   "song_name TEXT, "
@@ -239,28 +252,39 @@ void MainWindow::createPlaylist(const QString& playlistName)
         }
         else
         {
-            ClickableLabel* playlistLabel = new ClickableLabel(playlistName);
-            playlistLabel->setAutoFillBackground(true);
-            playlistLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-            playlistLabel->setFixedWidth(120);
-            playlistLabel->setFixedHeight(30);
+            QListWidgetItem* item = new QListWidgetItem;
+            item->setText(playlistName);
             QFont font("Sans Serif", 10);
             font.setBold(true);
-            playlistLabel->setFont(font);
-            connect(playlistLabel, &ClickableLabel::clicked, this, &MainWindow::playlistClicked);
-            playlistVec.push_back(playlistLabel);
-            ui->playlistSlot->addWidget(playlistLabel);
+            item->setFont(font);
+            item->setTextAlignment(Qt::AlignHCenter);
+            ui->playlistSlot->addItem(item);
 
             QString result = QString("Created playlist named: %1").arg(playlistName);
             qDebug() << result;
         }
+
+        query.prepare("INSERT INTO playlists VALUES (?);");
+        query.addBindValue(playlistName);
+        query.exec();
     }
 }
 
-void MainWindow::playlistClicked(QUrl path, QString type)
+void MainWindow::on_playlistSlot_itemClicked(QListWidgetItem *item)
 {
-    for (auto label : playlistVec)
-    {
-        label->setStyleSheet("");
-    }
+    qDebug() << item->text();
 }
+
+
+void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
+{
+    ui->addSongs->setEnabled(true);
+    currentPlaylist = item->text();
+    ui->songSlot->clear();
+}
+
+
+void MainWindow::on_addSongs_clicked()
+{
+}
+
