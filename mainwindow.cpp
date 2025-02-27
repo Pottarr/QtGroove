@@ -4,12 +4,15 @@
 #include <QStyle>
 #include <QFile>
 #include <QDir>
+#include <QSqlQuery>
+#include <QSqlError>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     createDBFile();
+
     ui->setupUi(this);
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
@@ -30,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    db.close();
     delete ui;
 }
 
@@ -44,6 +48,10 @@ void MainWindow::createDBFile()
     if (db.open())
     {
         qDebug("Opened playlist.db");
+    }
+    else
+    {
+        qDebug("Cannot open playlist.db");
     }
 }
 
@@ -198,20 +206,55 @@ void MainWindow::on_createPlaylist_clicked()
 
 }
 
+bool MainWindow::checkTableExist(QString playlistName)
+{
+    QSqlQuery query(db);
+    query.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=:tableName;");
+    query.bindValue(":tableName", playlistName);
+
+    if (!query.exec())
+    {
+        qDebug() << "Result from checking existence: " << query.lastError().text();
+        return false;
+    }
+
+    return query.next();
+}
+
 void MainWindow::createPlaylist(const QString& playlistName)
 {
-    // QString result = QString("Created playlist named: %1").arg(playlistName);
-    ClickableLabel* playlistLabel = new ClickableLabel(playlistName);
-    playlistLabel->setAutoFillBackground(true);
-    playlistLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    playlistLabel->setFixedWidth(120);
-    playlistLabel->setFixedHeight(30);
-    QFont font("Sans Serif", 10);
-    font.setBold(true);
-    playlistLabel->setFont(font);
-    connect(playlistLabel, &ClickableLabel::clicked, this, &MainWindow::playlistClicked);
-    playlistVec.push_back(playlistLabel);
-    ui->playlistSlot->addWidget(playlistLabel);
+
+    if (!checkTableExist(playlistName))
+    {
+        QSqlQuery query;
+        QString createTableQueryCommand = QString("CREATE TABLE %1 ("
+                                                  "song_path TEXT PRIMARY KEY, "
+                                                  "song_name TEXT, "
+                                                  "author_name TEXT, "
+                                                  "date_added DATETIME, "
+                                                  "duration INTEGER);").arg(playlistName);
+        if (!query.exec(createTableQueryCommand))
+        {
+            qDebug() << "Error creating a playlist: " << query.lastError().text();
+        }
+        else
+        {
+            ClickableLabel* playlistLabel = new ClickableLabel(playlistName);
+            playlistLabel->setAutoFillBackground(true);
+            playlistLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+            playlistLabel->setFixedWidth(120);
+            playlistLabel->setFixedHeight(30);
+            QFont font("Sans Serif", 10);
+            font.setBold(true);
+            playlistLabel->setFont(font);
+            connect(playlistLabel, &ClickableLabel::clicked, this, &MainWindow::playlistClicked);
+            playlistVec.push_back(playlistLabel);
+            ui->playlistSlot->addWidget(playlistLabel);
+
+            QString result = QString("Created playlist named: %1").arg(playlistName);
+            qDebug() << result;
+        }
+    }
 }
 
 void MainWindow::playlistClicked(QUrl path, QString type)

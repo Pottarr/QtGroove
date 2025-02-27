@@ -73,7 +73,7 @@ private:
 
     void createDBFile();
 
-    void refresh();
+    bool checkTableExist(QString playlistName);
 
     void playlistClicked(QUrl path, QString type);
 };
