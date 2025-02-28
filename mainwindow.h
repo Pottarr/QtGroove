@@ -13,6 +13,7 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <QListWidgetItem>
+#include <QTableWidgetItem>
 #include <QSqlQuery>
 #include <QSqlError>
 
@@ -56,11 +57,11 @@ private slots:
 
     void on_createPlaylist_clicked();
 
-    void on_playlistSlot_itemClicked(QListWidgetItem *item);
-
     void on_playlistSlot_itemDoubleClicked(QListWidgetItem *item);
 
     void on_addSongs_clicked();
+
+    void on_songSlot_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;
@@ -84,6 +85,10 @@ private:
 
     bool checkTableExist(QString playlistName);
 
+    int checkSongExist(QString path);
+
     void initializePlaylist();
+
+    void playMusic();
 };
 #endif // MAINWINDOW_H

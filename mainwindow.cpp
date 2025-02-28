@@ -75,13 +75,18 @@ void MainWindow::on_openFile_clicked()
     currentFile = QFileDialog::getOpenFileUrl(this, tr("Open file"), QUrl(""), tr("mp3 (*.mp3)"));
     if (currentFile != QUrl(""))
     {
-        player->setSource(currentFile);
-        player->play();
-        playing = true;
-
-        ui->nowPlayingLabel->setText(currentFile.fileName());
-        ui->nowPlayingLabel->adjustSize();
+        playMusic();
     }
+}
+
+void MainWindow::playMusic()
+{
+    player->setSource(currentFile);
+    player->play();
+    playing = true;
+
+    ui->nowPlayingLabel->setText(currentFile.fileName());
+    ui->nowPlayingLabel->adjustSize();
 }
 
 void MainWindow::on_playButton_clicked()
@@ -235,6 +240,13 @@ bool MainWindow::checkTableExist(QString playlistName)
     return query.next();
 }
 
+int MainWindow::checkSongExist(QString path)
+{
+    query.exec(QString("SELECT count(*) FROM %1 WHERE song_path = '%2';").arg(currentPlaylist, path));
+    query.next();
+    return query.value(0).toInt();
+}
+
 void MainWindow::createPlaylist(const QString& playlistName)
 {
 
@@ -270,21 +282,66 @@ void MainWindow::createPlaylist(const QString& playlistName)
     }
 }
 
-void MainWindow::on_playlistSlot_itemClicked(QListWidgetItem *item)
-{
-    qDebug() << item->text();
-}
-
-
 void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
 {
     ui->addSongs->setEnabled(true);
     currentPlaylist = item->text();
-    ui->songSlot->clear();
-}
+    ui->songSlot->clearContents();
+    ui->songSlot->setRowCount(0);
+    query.exec(QString("SELECT * FROM %1").arg(currentPlaylist));
+    while (query.next())
+    {
+        QList<QTableWidgetItem*> items = {
+            new QTableWidgetItem(query.value(1).toString()),
+            new QTableWidgetItem("moo"),
+            new QTableWidgetItem("moo"),
+            new QTableWidgetItem("moo"),
+        };
 
+        int rowCount = ui->songSlot->rowCount();
+        ui->songSlot->setRowCount(rowCount+1);
+        for (int column = 0; column < items.size(); ++column)
+        {
+            ui->songSlot->setItem(rowCount, column, items[column]);
+        }
+    }
+}
 
 void MainWindow::on_addSongs_clicked()
 {
+    QList<QUrl> list = QFileDialog::getOpenFileUrls(this, tr("Add music"), QUrl(""), tr("mp3 (*.mp3)"));
+    for (int i = 0; i < list.size(); ++i)
+    {
+        if (!checkSongExist(list[i].path()))
+        {
+            QString addSongsCommand = QString("INSERT INTO %1 (song_path,song_name) VALUES ('%2','%3');").arg(currentPlaylist, list[i].path(), list[i].fileName());
+            query.exec(addSongsCommand);
+
+            QList<QTableWidgetItem*> items = {
+                new QTableWidgetItem(list[i].fileName()),
+                new QTableWidgetItem("moo"),
+                new QTableWidgetItem("moo"),
+                new QTableWidgetItem("moo"),
+            };
+
+            int rowCount = ui->songSlot->rowCount();
+            ui->songSlot->setRowCount(rowCount+1);
+            for (int column = 0; column < items.size(); ++column)
+            {
+                ui->songSlot->setItem(rowCount, column, items[column]);
+            }
+
+        }
+    }
+}
+
+
+void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QString fileName = ui->songSlot->item(item->row(), 0)->text();
+    query.exec(QString("SELECT song_path FROM %1 WHERE song_name = '%2'").arg(currentPlaylist, fileName));
+    query.next();
+    currentFile = query.value(0).toUrl();
+    playMusic();
 }
 
