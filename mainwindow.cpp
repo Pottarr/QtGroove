@@ -4,6 +4,7 @@
 #include <QStyle>
 #include <QFile>
 #include <QDir>
+#include <QMediaMetaData>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -256,8 +257,8 @@ void MainWindow::createPlaylist(const QString& playlistName)
                                                   "song_path TEXT PRIMARY KEY, "
                                                   "song_name TEXT, "
                                                   "author_name TEXT, "
-                                                  "date_added DATETIME, "
-                                                  "duration INTEGER);").arg(playlistName);
+                                                  "date_added TEXT, "
+                                                  "duration TEXT);").arg(playlistName);
         if (!query.exec(createTableQueryCommand))
         {
             qDebug() << "Error creating a playlist: " << query.lastError().text();
@@ -293,9 +294,9 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
     {
         QList<QTableWidgetItem*> items = {
             new QTableWidgetItem(query.value(1).toString()),
-            new QTableWidgetItem("moo"),
-            new QTableWidgetItem("moo"),
-            new QTableWidgetItem("moo"),
+            new QTableWidgetItem(query.value(2).toString()),
+            new QTableWidgetItem(query.value(3).toString()),
+            new QTableWidgetItem(query.value(4).toString()),
         };
 
         int rowCount = ui->songSlot->rowCount();
@@ -314,14 +315,25 @@ void MainWindow::on_addSongs_clicked()
     {
         if (!checkSongExist(list[i].path()))
         {
-            QString addSongsCommand = QString("INSERT INTO %1 (song_path,song_name) VALUES ('%2','%3');").arg(currentPlaylist, list[i].path(), list[i].fileName());
+
+
+
+
+            player->setSource(list[i].path());
+            QString author = player->metaData().value(QMediaMetaData::Author).toString();
+            QString dateAdded = player->metaData().value(QMediaMetaData::Date).toString();
+            QString duration = getSongWholeDuration();
+            QString addSongsCommand = QString("INSERT INTO %1 (song_path,song_name) VALUES ('%2','%3', '%4', '%5', '%6');").arg(currentPlaylist, list[i].path(), list[i].fileName(), author, dateAdded);
+
+
+
             query.exec(addSongsCommand);
 
             QList<QTableWidgetItem*> items = {
                 new QTableWidgetItem(list[i].fileName()),
-                new QTableWidgetItem("moo"),
-                new QTableWidgetItem("moo"),
-                new QTableWidgetItem("moo"),
+                new QTableWidgetItem(author),
+                new QTableWidgetItem(dateAdded),
+                new QTableWidgetItem(duration),
             };
 
             int rowCount = ui->songSlot->rowCount();
