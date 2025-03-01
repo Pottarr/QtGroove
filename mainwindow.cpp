@@ -241,7 +241,7 @@ bool MainWindow::checkTableExist(QString playlistName)
     return query.next();
 }
 
-int MainWindow::checkSongExist(QString path)
+bool MainWindow::checkSongExist(QString path)
 {
     query.exec(QString("SELECT count(*) FROM %1 WHERE song_path = '%2';").arg(currentPlaylist, path));
     query.next();
@@ -292,7 +292,6 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
     query.exec(QString("SELECT * FROM %1").arg(currentPlaylist));
     while (query.next())
     {
-
         QString durationText = changeDurationToText(query.value(4).toInt());
 
         QList<QTableWidgetItem*> items = {
@@ -307,7 +306,9 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
         for (int column = 0; column < items.size(); ++column)
         {
             ui->songSlot->setItem(rowCount, column, items[column]);
+            items[column]->setData(5, query.value(0));
         }
+
     }
 }
 
@@ -318,74 +319,74 @@ void MainWindow::on_addSongs_clicked()
     {
         if (!checkSongExist(list[i].path()))
         {
-            currentFile = list[i].path();
-            player->setSource(currentFile);
+            currentFile = list[i].toLocalFile();
+            QMediaPlayer tempPlayer;
+            QAudioOutput tempAudio;
+            tempPlayer.setSource(currentFile);
+            tempPlayer.setAudioOutput(&tempAudio);
+            QThread::msleep(200);
+            tempPlayer.pause();
+
+            QString name =  currentFile.fileName();
+            QString author = "Not Found";
+            QString dateAdded = "Not Found";
+            int duration = 1000;
 
             qDebug() << "Current playlist: " << currentPlaylist;
 
             qDebug() << "Successfully retrieved the path: " << currentFile;
             qDebug() << "Successfully retrieved the name: " << currentFile.fileName();
 
-            connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
-                if (status == QMediaPlayer::LoadedMedia) {
-                    QString author = "Not Found";
-                    QString dateAdded = "Not Found";
-                    int duration = 1000;
-                    if (!player->metaData().value(QMediaMetaData::ContributingArtist).isNull()) {
-                        author = player->metaData().value(QMediaMetaData::ContributingArtist).toString();
-                        qDebug() << "Successfully retrieved the artist: " << author;
-                    }
-                    if (!player->metaData().value(QMediaMetaData::Date).isNull()) {
-                        dateAdded = player->metaData().value(QMediaMetaData::Date).toString();
-                        qDebug() << "Successfully retrieved the release date: " << dateAdded;
-                    }
-                    if (!player->metaData().value(QMediaMetaData::Duration).isNull()) {
-                        duration = player->metaData().value(QMediaMetaData::Duration).toInt();
-                        qDebug() << "Successfully retrieved the duration: " << duration << " MilliSec";
-                    }
-
-
-                    QString addSongsCommand = QString("INSERT INTO %1 (song_path, song_name, author_name, date_added, duration) VALUES (:songPath, :songName, :authorName, :dateAdded, :duration);").arg(currentPlaylist);
-
-                    QSqlQuery query;
-                    query.prepare(addSongsCommand);
-                    query.bindValue(":songPath", currentFile);
-                    query.bindValue(":songName", currentFile.fileName());
-                    query.bindValue(":authorName", author);
-                    query.bindValue(":dateAdded", dateAdded);
-                    query.bindValue(":duration", duration);
-
-                    qDebug() << "Command is:";
-                    qDebug() << addSongsCommand;
-
-
-                    if (!query.exec(addSongsCommand))
-                    {
-                        qDebug() << "Error from SQL" << query.lastError().text();
-                    }
-                    else
-                    {
-
-                        QString durationText = changeDurationToText(duration);
-
-                        QList<QTableWidgetItem*> items = {
-                        new QTableWidgetItem(currentFile.fileName()),
-                        new QTableWidgetItem(author),
-                        new QTableWidgetItem(dateAdded),
-                        new QTableWidgetItem(durationText),
-                        };
-
-                        int rowCount = ui->songSlot->rowCount();
-                        ui->songSlot->setRowCount(rowCount+1);
-                        for (int column = 0; column < items.size(); ++column)
-                        {
-                                ui->songSlot->setItem(rowCount, column, items[column]);
-                        }
-                    }
-
+            QElapsedTimer timer;
+            timer.start();
+            while (timer.elapsed() < 2000) {
+                QCoreApplication::processEvents();
+                if (!tempPlayer.metaData().value(QMediaMetaData::Duration).isNull()) {
+                    break;
                 }
-            });
+            }
 
+            if (!tempPlayer.metaData().value(QMediaMetaData::Title).isNull()) {
+                name = tempPlayer.metaData().value(QMediaMetaData::Title).toString();
+            }
+            if (!tempPlayer.metaData().value(QMediaMetaData::Duration).isNull()) {
+                duration = tempPlayer.metaData().value(QMediaMetaData::Duration).toInt();
+            }
+            if (!tempPlayer.metaData().value(QMediaMetaData::ContributingArtist).isNull()) {
+                author = tempPlayer.metaData().value(QMediaMetaData::ContributingArtist).toString();
+            }
+            if (!tempPlayer.metaData().value(QMediaMetaData::Date).isNull()) {
+                dateAdded = tempPlayer.metaData().value(QMediaMetaData::Date).toString();
+            }
+
+            QString addSongsCommand = QString("INSERT INTO %1 (song_path, song_name, author_name, date_added, duration) VALUES ('%2', '%3', '%4', '%5', %6);").arg(currentPlaylist, currentFile.toString(), name, author, dateAdded).arg(duration);
+
+            QSqlQuery query;
+
+            if (!query.exec(addSongsCommand))
+            {
+                qDebug() << "Error from SQL" << query.lastError().text();
+            }
+            else
+            {
+
+                QString durationText = changeDurationToText(duration);
+
+                QList<QTableWidgetItem*> items = {
+                    new QTableWidgetItem(name),
+                    new QTableWidgetItem(author),
+                    new QTableWidgetItem(dateAdded),
+                    new QTableWidgetItem(durationText),
+                };
+
+                int rowCount = ui->songSlot->rowCount();
+                ui->songSlot->setRowCount(rowCount+1);
+                for (int column = 0; column < items.size(); ++column)
+                {
+                    ui->songSlot->setItem(rowCount, column, items[column]);
+                    items[column]->setData(5, currentFile);
+                }
+            }
         }
     }
 }
@@ -393,10 +394,7 @@ void MainWindow::on_addSongs_clicked()
 
 void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
 {
-    QString fileName = ui->songSlot->item(item->row(), 0)->text();
-    query.exec(QString("SELECT song_path FROM %1 WHERE song_name = '%2'").arg(currentPlaylist, fileName));
-    query.next();
-    currentFile = query.value(0).toUrl();
+    currentFile = item->data(5).toUrl();
     playMusic();
 }
 

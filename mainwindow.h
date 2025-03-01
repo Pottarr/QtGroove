@@ -16,6 +16,8 @@
 #include <QTableWidgetItem>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QEventLoop>
+#include <QThread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -85,7 +87,7 @@ private:
 
     bool checkTableExist(QString playlistName);
 
-    int checkSongExist(QString path);
+    bool checkSongExist(QString path);
 
     void initializePlaylist();
 
