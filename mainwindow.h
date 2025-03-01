@@ -90,5 +90,7 @@ private:
     void initializePlaylist();
 
     void playMusic();
+
+    QString changeDurationToText(int);
 };
 #endif // MAINWINDOW_H

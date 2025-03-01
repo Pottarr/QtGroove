@@ -258,7 +258,7 @@ void MainWindow::createPlaylist(const QString& playlistName)
                                                   "song_name TEXT, "
                                                   "author_name TEXT, "
                                                   "date_added TEXT, "
-                                                  "duration TEXT);").arg(playlistName);
+                                                  "duration INTEGER);").arg(playlistName);
         if (!query.exec(createTableQueryCommand))
         {
             qDebug() << "Error creating a playlist: " << query.lastError().text();
@@ -292,11 +292,14 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
     query.exec(QString("SELECT * FROM %1").arg(currentPlaylist));
     while (query.next())
     {
+
+        QString durationText = changeDurationToText(query.value(4).toInt());
+
         QList<QTableWidgetItem*> items = {
             new QTableWidgetItem(query.value(1).toString()),
             new QTableWidgetItem(query.value(2).toString()),
             new QTableWidgetItem(query.value(3).toString()),
-            new QTableWidgetItem(query.value(4).toString()),
+            new QTableWidgetItem(durationText),
         };
 
         int rowCount = ui->songSlot->rowCount();
@@ -315,33 +318,73 @@ void MainWindow::on_addSongs_clicked()
     {
         if (!checkSongExist(list[i].path()))
         {
+            currentFile = list[i].path();
+            player->setSource(currentFile);
+
+            qDebug() << "Current playlist: " << currentPlaylist;
+
+            qDebug() << "Successfully retrieved the path: " << currentFile;
+            qDebug() << "Successfully retrieved the name: " << currentFile.fileName();
+
+            connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
+                if (status == QMediaPlayer::LoadedMedia) {
+                    QString author = "Not Found";
+                    QString dateAdded = "Not Found";
+                    int duration = 1000;
+                    if (!player->metaData().value(QMediaMetaData::ContributingArtist).isNull()) {
+                        author = player->metaData().value(QMediaMetaData::ContributingArtist).toString();
+                        qDebug() << "Successfully retrieved the artist: " << author;
+                    }
+                    if (!player->metaData().value(QMediaMetaData::Date).isNull()) {
+                        dateAdded = player->metaData().value(QMediaMetaData::Date).toString();
+                        qDebug() << "Successfully retrieved the release date: " << dateAdded;
+                    }
+                    if (!player->metaData().value(QMediaMetaData::Duration).isNull()) {
+                        duration = player->metaData().value(QMediaMetaData::Duration).toInt();
+                        qDebug() << "Successfully retrieved the duration: " << duration << " MilliSec";
+                    }
 
 
+                    QString addSongsCommand = QString("INSERT INTO %1 (song_path, song_name, author_name, date_added, duration) VALUES (:songPath, :songName, :authorName, :dateAdded, :duration);").arg(currentPlaylist);
+
+                    QSqlQuery query;
+                    query.prepare(addSongsCommand);
+                    query.bindValue(":songPath", currentFile);
+                    query.bindValue(":songName", currentFile.fileName());
+                    query.bindValue(":authorName", author);
+                    query.bindValue(":dateAdded", dateAdded);
+                    query.bindValue(":duration", duration);
+
+                    qDebug() << "Command is:";
+                    qDebug() << addSongsCommand;
 
 
-            player->setSource(list[i].path());
-            QString author = player->metaData().value(QMediaMetaData::Author).toString();
-            QString dateAdded = player->metaData().value(QMediaMetaData::Date).toString();
-            QString duration = getSongWholeDuration();
-            QString addSongsCommand = QString("INSERT INTO %1 (song_path,song_name) VALUES ('%2','%3', '%4', '%5', '%6');").arg(currentPlaylist, list[i].path(), list[i].fileName(), author, dateAdded);
+                    if (!query.exec(addSongsCommand))
+                    {
+                        qDebug() << "Error from SQL" << query.lastError().text();
+                    }
+                    else
+                    {
 
+                        QString durationText = changeDurationToText(duration);
 
+                        QList<QTableWidgetItem*> items = {
+                        new QTableWidgetItem(currentFile.fileName()),
+                        new QTableWidgetItem(author),
+                        new QTableWidgetItem(dateAdded),
+                        new QTableWidgetItem(durationText),
+                        };
 
-            query.exec(addSongsCommand);
+                        int rowCount = ui->songSlot->rowCount();
+                        ui->songSlot->setRowCount(rowCount+1);
+                        for (int column = 0; column < items.size(); ++column)
+                        {
+                                ui->songSlot->setItem(rowCount, column, items[column]);
+                        }
+                    }
 
-            QList<QTableWidgetItem*> items = {
-                new QTableWidgetItem(list[i].fileName()),
-                new QTableWidgetItem(author),
-                new QTableWidgetItem(dateAdded),
-                new QTableWidgetItem(duration),
-            };
-
-            int rowCount = ui->songSlot->rowCount();
-            ui->songSlot->setRowCount(rowCount+1);
-            for (int column = 0; column < items.size(); ++column)
-            {
-                ui->songSlot->setItem(rowCount, column, items[column]);
-            }
+                }
+            });
 
         }
     }
@@ -357,3 +400,14 @@ void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
     playMusic();
 }
 
+QString MainWindow::changeDurationToText(int durationMS)
+{
+
+    QString result;
+    int min = durationMS / 60000;
+    int sec = (durationMS % 60000) / 1000;
+
+    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
+
+    return result;
+}
