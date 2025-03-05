@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QDir>
 #include <QMediaMetaData>
+#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -368,7 +369,8 @@ void MainWindow::on_addSongs_clicked()
 
             QString name =  currentFile.fileName();
             QString author = "Not Found";
-            QString dateAdded = "Not Found";
+            QDateTime dateTimeAdded = QDateTime::currentDateTime();
+            QString dateTimeAddedString = dateTimeAdded.toString("dd/MM/yyyy hh:mm:ss");
             int duration = 1000;
 
             qDebug() << "Current playlist: " << currentPlaylist;
@@ -394,11 +396,11 @@ void MainWindow::on_addSongs_clicked()
             if (!tempPlayer.metaData().value(QMediaMetaData::ContributingArtist).isNull()) {
                 author = tempPlayer.metaData().value(QMediaMetaData::ContributingArtist).toString();
             }
-            if (!tempPlayer.metaData().value(QMediaMetaData::Date).isNull()) {
-                dateAdded = tempPlayer.metaData().value(QMediaMetaData::Date).toString();
-            }
+            // if (!tempPlayer.metaData().value(QMediaMetaData::Date).isNull()) {
+                // dateAdded = tempPlayer.metaData().value(QMediaMetaData::Date).toString();
+            // }
 
-            QString addSongsCommand = QString("INSERT INTO %1 (song_path, song_name, author_name, date_added, duration) VALUES ('%2', '%3', '%4', '%5', %6);").arg(currentPlaylist, currentFile.toString(), name, author, dateAdded).arg(duration);
+            QString addSongsCommand = QString("INSERT INTO %1 (song_path, song_name, author_name, date_added, duration) VALUES ('%2', '%3', '%4', '%5', %6);").arg(currentPlaylist, currentFile.toString(), name, author, dateTimeAddedString).arg(duration);
 
             QSqlQuery query;
 
@@ -414,7 +416,7 @@ void MainWindow::on_addSongs_clicked()
                 QList<QTableWidgetItem*> items = {
                     new QTableWidgetItem(name),
                     new QTableWidgetItem(author),
-                    new QTableWidgetItem(dateAdded),
+                    new QTableWidgetItem(dateTimeAddedString),
                     new QTableWidgetItem(durationText),
                 };
 
