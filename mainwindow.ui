@@ -369,6 +369,9 @@ color: rgb(255, 255, 255);</string>
     <property name="selectionBehavior">
      <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
     </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>150</number>
+    </attribute>
     <column>
      <property name="text">
       <string notr="true">Name</string>
@@ -409,7 +412,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
