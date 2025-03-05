@@ -24,6 +24,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
     connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
     {
+        if (status == QMediaPlayer::EndOfMedia)
+        {
+            on_nextButton_clicked();
+        }
+    });
+    connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
+    {
         if (status == QMediaPlayer::LoadedMedia)
         {
             ui->wholeSongDuration->setText(getSongWholeDuration());
@@ -86,7 +93,7 @@ void MainWindow::playMusic()
     player->play();
     playing = true;
 
-    ui->nowPlayingLabel->setText(currentFile.fileName());
+    ui->nowPlayingLabel->setText(ui->songSlot->item(songQueue.at(currentQueuePosition), 0)->text());
     ui->nowPlayingLabel->adjustSize();
 }
 
@@ -122,13 +129,45 @@ void MainWindow::on_restartButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
-
+    if (!songQueue.empty() && currentQueuePosition != 0)
+    {
+        --currentQueuePosition;
+        currentRow = songQueue.at(currentQueuePosition);
+        currentFile = ui->songSlot->item(currentRow, 0)->data(5).toUrl();
+        playMusic();
+    }
 }
 
 
 void MainWindow::on_nextButton_clicked()
 {
+    if (!songQueue.empty())
+    {
+        if (currentQueuePosition != songQueue.size()-1)
+        {
+            ++currentQueuePosition;
+            currentRow = songQueue.at(currentQueuePosition);
+        }
+        else
+        {
+            if (shuffleMode)
+            {
 
+            }
+            else
+            {
+                if (currentRow != ui->songSlot->rowCount()-1)
+                {
+                    ++currentRow;
+                    ++currentQueuePosition;
+                    songQueue.push_back(currentRow);
+                }
+            }
+        }
+        ui->songSlot->selectRow(currentRow);
+        currentFile = ui->songSlot->item(currentRow, 0)->data(5).toUrl();
+        playMusic();
+    }
 }
 
 
@@ -395,6 +434,10 @@ void MainWindow::on_addSongs_clicked()
 void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
 {
     currentFile = item->data(5).toUrl();
+    songQueue.clear();
+    currentRow = item->row();
+    songQueue.push_back(currentRow);
+    currentQueuePosition = 0;
     playMusic();
 }
 
@@ -409,3 +452,16 @@ QString MainWindow::changeDurationToText(int durationMS)
 
     return result;
 }
+
+void MainWindow::on_shuffleButton_clicked()
+{
+    if (!shuffleMode)
+    {
+        shuffleMode = true;
+    }
+    else
+    {
+        shuffleMode = false;
+    }
+}
+

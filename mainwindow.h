@@ -65,6 +65,8 @@ private slots:
 
     void on_songSlot_itemDoubleClicked(QTableWidgetItem *item);
 
+    void on_shuffleButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -74,6 +76,10 @@ private:
     QUrl currentFile;
     QString currentPlaylist;
     bool playing = false;
+    bool shuffleMode = false;
+    QList<int> songQueue = {};
+    int currentQueuePosition;
+    int currentRow;
 
     void changePlayButtonIcon(bool);
 
