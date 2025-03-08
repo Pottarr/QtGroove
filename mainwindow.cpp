@@ -27,7 +27,14 @@ MainWindow::MainWindow(QWidget *parent)
     {
         if (status == QMediaPlayer::EndOfMedia)
         {
-            on_nextButton_clicked();
+            if (loopTrack)
+            {
+                player->play();
+            }
+            else
+            {
+                on_nextButton_clicked();
+            }
         }
     });
     connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
@@ -35,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent)
         if (status == QMediaPlayer::LoadedMedia)
         {
             ui->wholeSongDuration->setText(getSongWholeDuration());
+
+            player->metaData().value(QMediaMetaData::Title).isNull() ?
+                ui->nowPlayingLabel->setText(currentFile.fileName()) :
+                ui->nowPlayingLabel->setText(player->metaData().value(QMediaMetaData::Title).toString());
+            ui->nowPlayingLabel->adjustSize();
         }
     });
 }
@@ -85,6 +97,7 @@ void MainWindow::on_openFile_clicked()
     if (currentFile != QUrl(""))
     {
         playMusic();
+        singleFileMode = true;
     }
 }
 
@@ -93,9 +106,6 @@ void MainWindow::playMusic()
     player->setSource(currentFile);
     player->play();
     playing = true;
-
-    ui->nowPlayingLabel->setText(ui->songSlot->item(songQueue.at(currentQueuePosition), 0)->text());
-    ui->nowPlayingLabel->adjustSize();
 }
 
 void MainWindow::on_playButton_clicked()
@@ -135,6 +145,7 @@ void MainWindow::on_previousButton_clicked()
         --currentQueuePosition;
         currentRow = songQueue.at(currentQueuePosition);
         currentFile = ui->songSlot->item(currentRow, 0)->data(5).toUrl();
+        ui->songSlot->selectRow(currentRow);
         playMusic();
     }
 }
@@ -142,7 +153,7 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_nextButton_clicked()
 {
-    if (!songQueue.empty())
+    if (!songQueue.empty() && !singleFileMode && currentRow <= ui->songSlot->rowCount()-1)
     {
         if (currentQueuePosition != songQueue.size()-1)
         {
@@ -153,11 +164,13 @@ void MainWindow::on_nextButton_clicked()
         {
             if (shuffleMode)
             {
-
+                currentRow = QRandomGenerator::global()->bounded(ui->songSlot->rowCount());
+                ++currentQueuePosition;
+                songQueue.push_back(currentRow);
             }
             else
             {
-                if (currentRow != ui->songSlot->rowCount()-1)
+                if (currentRow < ui->songSlot->rowCount()-1)
                 {
                     ++currentRow;
                     ++currentQueuePosition;
@@ -441,6 +454,7 @@ void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
     songQueue.push_back(currentRow);
     currentQueuePosition = 0;
     playMusic();
+    singleFileMode = false;
 }
 
 QString MainWindow::changeDurationToText(int durationMS)
@@ -460,10 +474,27 @@ void MainWindow::on_shuffleButton_clicked()
     if (!shuffleMode)
     {
         shuffleMode = true;
+        ui->shuffleButton->setText("Shuffle Mode: on");
     }
     else
     {
         shuffleMode = false;
+        ui->shuffleButton->setText("Shuffle Mode: off");
+    }
+}
+
+
+void MainWindow::on_loopTrackButton_clicked()
+{
+    if (!loopTrack)
+    {
+        loopTrack = true;
+        ui->loopTrackButton->setText("Loop Track: on");
+    }
+    else
+    {
+        loopTrack = false;
+        ui->loopTrackButton->setText("Loop Track: off");
     }
 }
 

@@ -18,6 +18,7 @@
 #include <QSqlError>
 #include <QEventLoop>
 #include <QThread>
+#include <QRandomGenerator>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -67,6 +68,8 @@ private slots:
 
     void on_shuffleButton_clicked();
 
+    void on_loopTrackButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -76,7 +79,9 @@ private:
     QUrl currentFile;
     QString currentPlaylist;
     bool playing = false;
+    bool loopTrack = false;
     bool shuffleMode = false;
+    bool singleFileMode = false;
     QList<int> songQueue = {};
     int currentQueuePosition;
     int currentRow;

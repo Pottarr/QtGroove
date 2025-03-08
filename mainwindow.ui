@@ -423,6 +423,24 @@ color: rgb(255, 255, 255);</string>
      <string>Shuffle Mode: off</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="loopTrackButton">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>420</y>
+      <width>101</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Loop Track: off</string>
+    </property>
+   </widget>
    <zorder>songSlot</zorder>
    <zorder>controlPanelFrame</zorder>
    <zorder>openFile</zorder>
@@ -430,6 +448,7 @@ color: rgb(255, 255, 255);</string>
    <zorder>playlistSlot</zorder>
    <zorder>addSongs</zorder>
    <zorder>shuffleButton</zorder>
+   <zorder>loopTrackButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -437,7 +456,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>900</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
