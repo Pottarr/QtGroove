@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     createDBFile();
 
     ui->setupUi(this);
+    // ui->songSlot->horizontalHeader()->stretchLastSection();
     initializePlaylist();
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
