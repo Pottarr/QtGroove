@@ -420,16 +420,6 @@ color: rgb(255, 255, 255);</string>
      </layout>
     </item>
    </layout>
-   <zorder>songSlot</zorder>
-   <zorder>openFile</zorder>
-   <zorder>createPlaylist</zorder>
-   <zorder>playlistSlot</zorder>
-   <zorder>addSongs</zorder>
-   <zorder>shuffleButton</zorder>
-   <zorder>loopTrackButton</zorder>
-   <zorder></zorder>
-   <zorder></zorder>
-   <zorder>controlPanelFrameWIthBG</zorder>
    <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -438,7 +428,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

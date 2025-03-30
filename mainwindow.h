@@ -13,12 +13,21 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <QListWidgetItem>
+#include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QEventLoop>
 #include <QThread>
 #include <QRandomGenerator>
+#include <QPoint>
+#include <QStyle>
+#include <QFile>
+#include <QDir>
+#include <QMediaMetaData>
+#include <QDateTime>
+#include <QMenu>
+#include <QModelIndex>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -70,6 +79,8 @@ private slots:
 
     void on_loopTrackButton_clicked();
 
+    void showContextMenu(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -85,6 +96,7 @@ private:
     QList<int> songQueue = {};
     int currentQueuePosition;
     int currentRow;
+    const int songPathRole = 5;
 
     void changePlayButtonIcon(bool);
 

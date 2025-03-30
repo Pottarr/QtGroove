@@ -1,11 +1,6 @@
 #include "mainwindow.h"
 #include "createplaylistdialog.h"
 #include "./ui_mainwindow.h"
-#include <QStyle>
-#include <QFile>
-#include <QDir>
-#include <QMediaMetaData>
-#include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     createDBFile();
 
     ui->setupUi(this);
-    // ui->songSlot->horizontalHeader()->stretchLastSection();
     initializePlaylist();
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
@@ -50,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
             ui->nowPlayingLabel->adjustSize();
         }
     });
+    ui->songSlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->songSlot, &QTableWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
 }
 
 MainWindow::~MainWindow()
@@ -84,8 +80,7 @@ void MainWindow::createDBFile()
     if (db.open())
     {
         qDebug("Opened playlist.db");
-        query.exec("CREATE TABLE IF NOT EXISTS playlists (name TEXT PRIMARY KEY NOT NULL);");
-    }
+        query.exec("CREATE TABLE IF NOT EXISTS playlists (name TEXT PRIMARY KEY NOT NULL);"); }
     else
     {
         qDebug("Cannot open playlist.db");
@@ -145,7 +140,7 @@ void MainWindow::on_previousButton_clicked()
     {
         --currentQueuePosition;
         currentRow = songQueue.at(currentQueuePosition);
-        currentFile = ui->songSlot->item(currentRow, 0)->data(5).toUrl();
+        currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
         ui->songSlot->selectRow(currentRow);
         playMusic();
     }
@@ -180,7 +175,7 @@ void MainWindow::on_nextButton_clicked()
             }
         }
         ui->songSlot->selectRow(currentRow);
-        currentFile = ui->songSlot->item(currentRow, 0)->data(5).toUrl();
+        currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
         playMusic();
     }
 }
@@ -360,7 +355,7 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
         for (int column = 0; column < items.size(); ++column)
         {
             ui->songSlot->setItem(rowCount, column, items[column]);
-            items[column]->setData(5, query.value(0));
+            items[column]->setData(songPathRole, query.value(0));
         }
 
     }
@@ -439,7 +434,7 @@ void MainWindow::on_addSongs_clicked()
                 for (int column = 0; column < items.size(); ++column)
                 {
                     ui->songSlot->setItem(rowCount, column, items[column]);
-                    items[column]->setData(5, currentFile);
+                    items[column]->setData(songPathRole, currentFile);
                 }
             }
         }
@@ -449,13 +444,26 @@ void MainWindow::on_addSongs_clicked()
 
 void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
 {
-    currentFile = item->data(5).toUrl();
+    currentFile = item->data(songPathRole).toUrl();
     songQueue.clear();
     currentRow = item->row();
     songQueue.push_back(currentRow);
     currentQueuePosition = 0;
     playMusic();
     singleFileMode = false;
+}
+
+void MainWindow::showContextMenu(const QPoint &pos)
+{
+    QTableWidgetItem *item = ui->songSlot->itemAt(pos);
+    if (!item) return;
+
+    int row = item->row();
+
+    QMenu contextMenu(tr("Context menu"), this);
+    contextMenu.addAction("Edit", this, [row]() { qDebug() << "Edit: clicked on row: " << row; });
+    contextMenu.addAction("Delete", this, [row]() { qDebug() << "Delete: clicked on row: " << row; });
+    contextMenu.exec(ui->songSlot->viewport()->mapToGlobal(pos));
 }
 
 QString MainWindow::changeDurationToText(int durationMS)
