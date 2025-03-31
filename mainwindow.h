@@ -81,6 +81,8 @@ private slots:
 
     void showContextMenu(const QPoint &pos);
 
+    void showContextMenuPlaylist(const QPoint &pos);
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -115,6 +117,8 @@ private:
     void initializePlaylist();
 
     void playMusic();
+
+    void removeSongs(int row);
 
     QString changeDurationToText(int);
 };

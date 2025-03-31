@@ -45,7 +45,9 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
     ui->songSlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->playlistSlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->songSlot, &QTableWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
+    connect(ui->playlistSlot, &QTableWidget::customContextMenuRequested, this, &MainWindow::showContextMenuPlaylist);
 }
 
 MainWindow::~MainWindow()
@@ -457,13 +459,38 @@ void MainWindow::showContextMenu(const QPoint &pos)
 {
     QTableWidgetItem *item = ui->songSlot->itemAt(pos);
     if (!item) return;
+    QString itemPath = item->data(songPathRole).toString();
 
     int row = item->row();
 
-    QMenu contextMenu(tr("Context menu"), this);
+    QMenu contextMenu;
     contextMenu.addAction("Edit", this, [row]() { qDebug() << "Edit: clicked on row: " << row; });
-    contextMenu.addAction("Delete", this, [row]() { qDebug() << "Delete: clicked on row: " << row; });
+    contextMenu.addAction("Remove from playlist", this, [&]()
+    {
+        ui->songSlot->removeRow(row);
+        query.exec(QString("DELETE FROM %1 WHERE song_path = '%2';").arg(currentPlaylist, itemPath));
+    });
     contextMenu.exec(ui->songSlot->viewport()->mapToGlobal(pos));
+}
+
+void MainWindow::showContextMenuPlaylist(const QPoint& pos)
+{
+    QListWidgetItem* item = ui->playlistSlot->itemAt(pos);
+    if (!item) return;
+
+    QString playlistName = item->text();
+    QMenu contextMenu;
+    contextMenu.addAction("Delete playlist", this, [&]()
+    {
+        query.exec(QString("DROP TABLE %1;").arg(playlistName));
+        query.exec(QString("DELETE FROM playlists WHERE name = '%1';").arg(playlistName));
+        ui->playlistSlot->takeItem(ui->playlistSlot->row(item));
+        ui->addSongs->setEnabled(false);
+        ui->songSlot->clearContents();
+        ui->songSlot->setRowCount(0);
+    });
+
+    contextMenu.exec(ui->playlistSlot->viewport()->mapToGlobal(pos));
 }
 
 QString MainWindow::changeDurationToText(int durationMS)
