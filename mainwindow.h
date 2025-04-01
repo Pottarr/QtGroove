@@ -83,6 +83,7 @@ private slots:
 
     void editSongMetaData(QString songName, QString artist, QString dateAdded);
 
+    void showContextMenuPlaylist(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;
@@ -118,6 +119,8 @@ private:
     void initializePlaylist();
 
     void playMusic();
+
+    void removeSongs(int row);
 
     QString changeDurationToText(int);
 };
