@@ -140,71 +140,73 @@ void MainWindow::on_restartButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
-    int minusOneCount = 0;
-    for (auto i : songQueue)
-    {
-        if (i == -1) ++minusOneCount;
-    }
-    if (minusOneCount == songQueue.size())
-    {
-        player->stop();
-        playing = false;
-    }
-    else
-    {
+    // int minusOneCount = 0;
+    // for (auto i : songQueue)
+    // {
+        // if (i == -1) ++minusOneCount;
+    // }
+    // if (minusOneCount == songQueue.size())
+    // {
+        // player->stop();
+        // playing = false;
+    // }
+    // else
+    // {
         if (!songQueue.empty() && currentQueuePosition != 0)
         {
-            int addBack = 0;
-            while (songQueue.at(--currentQueuePosition) == -1)
-            {
-                ++addBack;
-                if (currentQueuePosition == 0)
-                {
-                    currentQueuePosition += addBack;
-                    break;
-                }
-            }
+            // int addBack = 0;
+            // while (songQueue.at(--currentQueuePosition) == -1)
+            // {
+                // ++addBack;
+                // if (currentQueuePosition == 0)
+                // {
+                    // currentQueuePosition += addBack;
+                    // break;
+                // }
+            // }
+            --currentQueuePosition;
             currentRow = songQueue.at(currentQueuePosition);
             currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
             ui->songSlot->selectRow(currentRow);
             playMusic();
         }
-    }
+    // }
 }
 
 void MainWindow::on_nextButton_clicked()
 {
-    int minusOneCount = 0;
-    for (auto i : songQueue)
-    {
-        if (i == -1) ++minusOneCount;
-    }
-    if (minusOneCount == songQueue.size())
-    {
-        player->stop();
-        playing = false;
-    }
-    else
-    {
+    // int minusOneCount = 0;
+    // for (auto i : songQueue)
+    // {
+        // if (i == -1) ++minusOneCount;
+    // }
+    // if (minusOneCount == songQueue.size())
+    // {
+        // player->stop();
+        // playing = false;
+    // }
+    // else
+    // {
         bool lastSongNoLoop = false;
         if (!songQueue.empty() && !singleFileMode)
         {
             if (currentQueuePosition < songQueue.size()-1) // when not in the last position of queue list
             {
-                int foundMinusOne = 0;
-                while (songQueue.at(++currentQueuePosition) == -1)
-                {
-                    ++foundMinusOne;
-                    if (currentQueuePosition == songQueue.size()-1)
-                    {
-                        for (int i = 0; i < foundMinusOne; ++i)
-                        {
-                            songQueue.pop_back();
-                            --currentQueuePosition;
-                        }
-                        break;
-                    }
-                }
+                // int foundMinusOne = 0;
+                // while (songQueue.at(++currentQueuePosition) == -1)
+                // {
+                    // ++foundMinusOne;
+                    // if (currentQueuePosition == songQueue.size()-1)
+                    // {
+                        // for (int i = 0; i < foundMinusOne; ++i)
+                        // {
+                            // songQueue.pop_back();
+                            // --currentQueuePosition;
+                        // }
+                        // break;
+                    // }
+                // }
+                ++currentQueuePosition;
                 currentRow = songQueue.at(currentQueuePosition);
             }
             else // when in the last position of the queue list
@@ -227,8 +229,9 @@ void MainWindow::on_nextButton_clicked()
                     {
                         if (loopMode == 2) // loop playlist
                         {
-                            currentQueuePosition = -1;
-                            while (songQueue.at(++currentQueuePosition) == -1);
+                            // currentQueuePosition = -1;
+                            currentQueuePosition = 0;
+                            // while (songQueue.at(++currentQueuePosition) == -1);
                             currentRow = songQueue.at(currentQueuePosition);
                         }
                         else if (loopMode == 0) // no loop
@@ -250,7 +253,7 @@ void MainWindow::on_nextButton_clicked()
                 playing = false;
             }
         }
-    }
+    // }
 }
 
 
@@ -508,6 +511,7 @@ void MainWindow::on_addSongs_clicked()
 
 void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
 {
+    ui->loopComboBox->setEnabled(true);
     currentFile = item->data(songPathRole).toUrl();
     songQueue.clear();
     currentRow = item->row();
@@ -536,15 +540,27 @@ void MainWindow::showContextMenu(const QPoint &pos)
         dialog->exec();
 
     });
-  
+
     contextMenu.addAction("Remove from playlist", this, [&]()
     {
         ui->songSlot->removeRow(row);
         query.exec(QString("DELETE FROM %1 WHERE song_path = '%2';").arg(currentPlaylist, itemPath));
-        for (auto& i : songQueue)
+        // for (auto& i : songQueue)
+        // {
+            // if (i > row) --i;
+            // else if (i == row) i = -1;
+        // }
+        int i = 0;
+        while (i < songQueue.size())
         {
-            if (i > row) --i;
-            else if (i == row) i = -1;
+            if (songQueue[i] == row)
+            {
+                songQueue.removeAt(i);
+                --currentQueuePosition;
+            } else if (songQueue[i] > row)
+            {
+                --songQueue[i];
+            }
         }
     });
     contextMenu.exec(ui->songSlot->viewport()->mapToGlobal(pos));
@@ -601,9 +617,29 @@ void MainWindow::on_shuffleButton_clicked()
 
 void MainWindow::on_loopComboBox_currentTextChanged(const QString &arg1)
 {
-    if (arg1 == QString("No Loop")) loopMode = 0;
-    else if (arg1 == QString("Loop Track")) loopMode = 1;
-    else if (arg1 == QString("Loop Playlist")) loopMode = 2;
+    if (arg1 == QString("No Loop"))
+    {
+        loopMode = 0;
+        songQueue = tempSongQueue;
+        currentQueuePosition = tempCurrentQueuePosition;
+    } else if (arg1 == QString("Loop Track"))
+    {
+        loopMode = 1;
+        songQueue = tempSongQueue;
+        currentQueuePosition = tempCurrentQueuePosition;
+    } else if (arg1 == QString("Loop Playlist"))
+    {
+        loopMode = 2;
+        tempSongQueue = songQueue;
+        tempCurrentQueuePosition = currentQueuePosition;
+
+        songQueue.clear();
+        for (int i = 0; i < ui->songSlot->rowCount(); i++)
+        {
+            songQueue.push_back(i);
+        }
+        currentQueuePosition = currentRow;
+    }
     qDebug() << loopMode;
 }
 

@@ -98,7 +98,9 @@ private:
     bool shuffleMode = false;
     bool singleFileMode = false;
     QList<int> songQueue = {};
+    QList<int> tempSongQueue = {};
     int currentQueuePosition;
+    int tempCurrentQueuePosition;
     int currentRow;
     const int songPathRole = 5;
 

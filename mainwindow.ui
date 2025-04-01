@@ -167,6 +167,9 @@ color: rgb(255, 255, 255);</string>
             </item>
             <item>
              <widget class="QComboBox" name="loopComboBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="font">
                <font>
                 <bold>true</bold>
@@ -452,7 +455,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
