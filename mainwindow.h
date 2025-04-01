@@ -28,6 +28,8 @@
 #include <QDateTime>
 #include <QMenu>
 #include <QModelIndex>
+#include <algorithm>
+#include <random>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -98,9 +100,9 @@ private:
     bool shuffleMode = false;
     bool singleFileMode = false;
     QList<int> songQueue = {};
-    QList<int> tempSongQueue = {};
+    // QList<int> tempSongQueue = {};
     int currentQueuePosition;
-    int tempCurrentQueuePosition;
+    // int tempCurrentQueuePosition;
     int currentRow;
     const int songPathRole = 5;
 
