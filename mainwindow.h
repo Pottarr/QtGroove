@@ -81,6 +81,9 @@ private slots:
 
     void showContextMenu(const QPoint &pos);
 
+    void editSongMetaData(QString songName, QString artist, QString dateAdded);
+
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
