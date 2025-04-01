@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->playlistSlot->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->songSlot, &QTableWidget::customContextMenuRequested, this, &MainWindow::showContextMenu);
     connect(ui->playlistSlot, &QTableWidget::customContextMenuRequested, this, &MainWindow::showContextMenuPlaylist);
+
 }
 
 MainWindow::~MainWindow()
@@ -143,9 +144,12 @@ void MainWindow::on_previousButton_clicked()
     {
         --currentQueuePosition;
         currentRow = songQueue.at(currentQueuePosition);
-        currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
-        ui->songSlot->selectRow(currentRow);
-        playMusic();
+        if (currentRow <= ui->songSlot->rowCount()-1)
+        {
+            currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
+            ui->songSlot->selectRow(currentRow);
+            playMusic();
+        }
     }
 }
 
