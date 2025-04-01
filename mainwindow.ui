@@ -166,15 +166,36 @@ color: rgb(255, 255, 255);</string>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="loopTrackButton">
+             <widget class="QComboBox" name="loopComboBox">
               <property name="font">
                <font>
                 <bold>true</bold>
                </font>
               </property>
-              <property name="text">
-               <string>Loop Track: off</string>
+              <property name="currentText">
+               <string>No Loop</string>
               </property>
+              <property name="insertPolicy">
+               <enum>QComboBox::InsertPolicy::InsertAtBottom</enum>
+              </property>
+              <property name="placeholderText">
+               <string/>
+              </property>
+              <item>
+               <property name="text">
+                <string>No Loop</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Loop Track</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Loop Playlist</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>

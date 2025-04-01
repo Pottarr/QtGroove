@@ -77,13 +77,13 @@ private slots:
 
     void on_shuffleButton_clicked();
 
-    void on_loopTrackButton_clicked();
-
     void showContextMenu(const QPoint &pos);
 
     void editSongMetaData(QString songName, QString artist, QString dateAdded);
 
     void showContextMenuPlaylist(const QPoint &pos);
+
+    void on_loopComboBox_currentTextChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -94,7 +94,7 @@ private:
     QUrl currentFile;
     QString currentPlaylist;
     bool playing = false;
-    bool loopTrack = false;
+    int loopMode = 0;
     bool shuffleMode = false;
     bool singleFileMode = false;
     QList<int> songQueue = {};
