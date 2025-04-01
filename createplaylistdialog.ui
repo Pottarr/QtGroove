@@ -18,13 +18,26 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label">
+       <property name="maximumSize">
+        <size>
+         <width>75</width>
+         <height>30</height>
+        </size>
+       </property>
        <property name="text">
         <string>Playlist name: </string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="playlistNameInput"/>
+      <widget class="QLineEdit" name="playlistNameInput">
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

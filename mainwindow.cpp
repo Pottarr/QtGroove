@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "createplaylistdialog.h"
+#include "editsongmetadatadialog.h"
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -259,15 +260,6 @@ void MainWindow::on_volumeSlider_valueChanged(int value)
     audio->setVolume(static_cast<float>(value)/100.0);
 }
 
-
-
-
-// Refreash some part of the program (NOT THE PLAYER AND CONTROL PANEL) after SQL EXEC
-// void MainWindow::refresh()
-// {
-
-
-
 void MainWindow::on_createPlaylist_clicked()
 {
     CreatePlaylistDialog* dialog = new CreatePlaylistDialog(this);
@@ -463,8 +455,18 @@ void MainWindow::showContextMenu(const QPoint &pos)
 
     int row = item->row();
 
-    QMenu contextMenu;
-    contextMenu.addAction("Edit", this, [row]() { qDebug() << "Edit: clicked on row: " << row; });
+
+    QMenu contextMenu(tr("Context menu"), this);
+    contextMenu.addAction("Edit song metadata", this,[this, item]()
+    {
+        EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this);
+
+        connect(dialog, &EditSongMetaDataDialog::songMetaDataEdited, this, &MainWindow::editSongMetaData);
+
+        dialog->exec();
+
+    });
+  
     contextMenu.addAction("Remove from playlist", this, [&]()
     {
         ui->songSlot->removeRow(row);
@@ -491,7 +493,10 @@ void MainWindow::showContextMenuPlaylist(const QPoint& pos)
     });
 
     contextMenu.exec(ui->playlistSlot->viewport()->mapToGlobal(pos));
+
 }
+
+void MainWindow::editSongMetaData(QString songName, QString artist, QString dateAdded) {}
 
 QString MainWindow::changeDurationToText(int durationMS)
 {

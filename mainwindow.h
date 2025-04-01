@@ -81,6 +81,8 @@ private slots:
 
     void showContextMenu(const QPoint &pos);
 
+    void editSongMetaData(QString songName, QString artist, QString dateAdded);
+
     void showContextMenuPlaylist(const QPoint &pos);
 
 private:
