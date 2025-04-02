@@ -162,10 +162,21 @@ void MainWindow::on_restartButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
-    if (!songQueue.empty() && currentQueuePosition != 0)
+    if (!songQueue.empty())
     {
-        --currentQueuePosition;
-        currentRow = songQueue.at(currentQueuePosition);
+        if (currentQueuePosition != 0) // not first item
+        {
+            --currentQueuePosition;
+            currentRow = songQueue.at(currentQueuePosition);
+        }
+        else // first item
+        {
+            if (loopMode == 2)
+            {
+                currentQueuePosition = songQueue.size() - 1;
+                currentRow = songQueue.at(currentQueuePosition);
+            }
+        }
         currentFile = ui->songSlot->item(currentRow, 0)->data(songPathRole).toUrl();
         ui->songSlot->selectRow(currentRow);
         playMusic();
@@ -511,13 +522,18 @@ void MainWindow::on_addSongs_clicked()
 
 void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
 {
-    ui->loopComboBox->setEnabled(true);
     currentFile = item->data(songPathRole).toUrl();
     songQueue.clear();
     currentRow = item->row();
     for (int i = 0; i < ui->songSlot->rowCount(); i++)
     {
         songQueue.push_back(i);
+    }
+    if (shuffleMode)
+    {
+        std::shuffle(songQueue.begin(), songQueue.end(), *QRandomGenerator::global());
+
+        qDebug() << "Current songQueue: " << songQueue;
     }
     currentQueuePosition = currentRow;
     playMusic();
@@ -559,6 +575,28 @@ void MainWindow::showContextMenu(const QPoint &pos)
     {
         ui->songSlot->removeRow(row);
         query.exec(QString("DELETE FROM %1 WHERE song_path = '%2';").arg(currentPlaylist, itemPath));
+        int i = 0;
+        while (i < songQueue.size())
+        {
+            if (songQueue[i] == row)
+            {
+                if (songQueue[currentQueuePosition] > row)
+                {
+                    --currentQueuePosition;
+                }
+                songQueue.removeAt(i);
+
+            }
+            else if (songQueue[i] > row)
+            {
+                --songQueue[i];
+                ++i;
+            }
+            else
+            {
+                ++i;
+            }
+        }
         qDebug() << "Current songQueue: " << songQueue;
     });
     contextMenu.exec(ui->songSlot->viewport()->mapToGlobal(pos));
@@ -577,6 +615,7 @@ void MainWindow::showContextMenuPlaylist(const QPoint& pos)
         query.exec(QString("DELETE FROM playlists WHERE name = '%1';").arg(playlistName));
         ui->playlistSlot->takeItem(ui->playlistSlot->row(item));
         ui->addSongs->setEnabled(false);
+        songQueue.clear();
         ui->songSlot->clearContents();
         ui->songSlot->setRowCount(0);
     });
@@ -686,6 +725,7 @@ void MainWindow::on_shuffleButton_clicked()
         {
             songQueue.push_back(i);
         }
+        currentQueuePosition = currentRow;
         qDebug() << "Current songQueue: " << songQueue;
     }
 }
