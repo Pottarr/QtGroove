@@ -81,7 +81,7 @@ private slots:
 
     void showContextMenu(const QPoint &pos);
 
-    void editSongMetaData(QString songName, QString artist, QString dateAdded);
+    void editSongMetaData(QString &songPath, QString &songName, QString &authorName, QString &dateAdded);
 
     void showContextMenuPlaylist(const QPoint &pos);
 
@@ -104,7 +104,10 @@ private:
     int currentQueuePosition;
     // int tempCurrentQueuePosition;
     int currentRow;
-    const int songPathRole = 5;
+    int songPathRole;
+    int songNameRole;
+    int authorNameRole;
+    int dateAddedRole;
 
     void changePlayButtonIcon(bool);
 

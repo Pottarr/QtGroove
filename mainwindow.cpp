@@ -39,9 +39,31 @@ MainWindow::MainWindow(QWidget *parent)
         {
             ui->wholeSongDuration->setText(getSongWholeDuration());
 
+            if (singleFileMode)
+            {
             player->metaData().value(QMediaMetaData::Title).isNull() ?
                 ui->nowPlayingLabel->setText(currentFile.fileName()) :
                 ui->nowPlayingLabel->setText(player->metaData().value(QMediaMetaData::Title).toString());
+            }
+            else
+            {
+
+                if (!query.exec(QString("SELECT song_name FROM '%1' WHERE song_path = '%2'").arg(currentPlaylist, currentFile.toString()))) {
+                    qDebug() << "Query failed:" << query.lastError().text();
+                } else if (query.next()) {  // Moves to the first row
+                    QString displaySongName = query.value(0).toString();  // Get the first column value
+                    qDebug() << "Song Name:" << displaySongName;
+                    displaySongName.isEmpty() ?
+                        ui->nowPlayingLabel->setText(player->metaData().value(QMediaMetaData::Title).toString()) :
+                        ui->nowPlayingLabel->setText(displaySongName);
+                } else {
+                    qDebug() << "No matching record found.";
+                    player->metaData().value(QMediaMetaData::Title).isNull() ?
+                        ui->nowPlayingLabel->setText(currentFile.fileName()) :
+                        ui->nowPlayingLabel->setText(player->metaData().value(QMediaMetaData::Title).toString());
+            }
+            }
+
             ui->nowPlayingLabel->adjustSize();
         }
     });
@@ -381,7 +403,29 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
         for (int column = 0; column < items.size(); ++column)
         {
             ui->songSlot->setItem(rowCount, column, items[column]);
+
+            // switch (column) {
+            // case 0: // Song Name
+                // items[column]->setData(songPathRole, query.value(0));  // Song path
+                // break;
+            // case 1: // Author/Artist Name
+                // items[column]->setData(songNameRole, query.value(1));  // Song name
+                // break;
+            // case 2: // Album (or additional data)
+                // items[column]->setData(authorNameRole, query.value(2));  // Author name
+                // break;
+            // case 3: // Duration
+                // items[column]->setData(dateAddedRole, query.value(4));  // Date added
+                // break;
+            // default:
+                // break;
+            // }
+
+
             items[column]->setData(songPathRole, query.value(0));
+            // items[column]->setData(songNameRole, query.value(1));
+            // items[column]->setData(authorNameRole, query.value(2));
+            // items[column]->setData(dateAddedRole, query.value(3));
         }
 
     }
@@ -476,9 +520,9 @@ void MainWindow::on_songSlot_itemDoubleClicked(QTableWidgetItem *item)
         songQueue.push_back(i);
     }
     currentQueuePosition = currentRow;
+    playMusic();
     qDebug() << "Current songQueue: " << songQueue;
     qDebug() << "Current index: " << currentQueuePosition << ", aka row: " << currentRow;
-    playMusic();
     singleFileMode = false;
 }
 
@@ -488,13 +532,22 @@ void MainWindow::showContextMenu(const QPoint &pos)
     if (!item) return;
     QString itemPath = item->data(songPathRole).toString();
 
+
     int row = item->row();
 
 
-    QMenu contextMenu(tr("Context menu"), this);
-    contextMenu.addAction("Edit song metadata", this,[this, item]()
+    QMenu contextMenu(tr("Song Slot Context Menu"), this);
+    contextMenu.addAction("Edit song metadata", this, [this, row]()
     {
-        EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this);
+        // QString songName = this->ui->songSlot->item(currentRow, 0)->data(songNameRole).toString();
+        // QString authorName = this->ui->songSlot->item(currentRow, 1)->data(authorNameRole).toString();
+        // QString dateAdded = this->ui->songSlot->item(currentRow, 2)->data(dateAddedRole).toString();
+        QString songPath = this->ui->songSlot->item(row, 0)->data(songPathRole).toString();
+        QString songName = this->ui->songSlot->item(row, 0)->text();  // Get song name
+        QString authorName = this->ui->songSlot->item(row, 1)->text();  // Get author name
+        QString dateAdded = this->ui->songSlot->item(row, 2)->text();  // Get author name
+        EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this, songPath, songName, authorName, dateAdded);
+        // EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this);
 
         connect(dialog, &EditSongMetaDataDialog::songMetaDataEdited, this, &MainWindow::editSongMetaData);
 
@@ -532,7 +585,74 @@ void MainWindow::showContextMenuPlaylist(const QPoint& pos)
 
 }
 
-void MainWindow::editSongMetaData(QString songName, QString artist, QString dateAdded) {}
+void MainWindow::editSongMetaData(QString &songPath, QString &songName, QString &authorName, QString &dateAdded)
+{
+    // query.prepare("UPDATE songs SET song_name = ':var1', author_name = ':var2', date_added = ':var3' WHERE song_path = ':var4'");
+    // query.prepare("UPDATE :var0 SET song_name = :var1, author_name = :var2, date_added = :var3 WHERE song_path = :var4");
+    // query.bindValue(":var0", currentPlaylist);
+    // query.bindValue(":var1", songName);
+    // query.bindValue(":var2", authorName);
+    // query.bindValue(":var3", dateAdded);
+    // query.bindValue(":var4", songPath);
+
+    // qDebug() << "UPDATE songs SET song_name =" << songName
+             // << ", author_name =" << authorName
+             // << ", date_added =" << dateAdded
+             // << "WHERE song_path =" << songPath;
+
+
+    if (!query.exec(QString("UPDATE '%1' SET song_name = '%2', author_name = '%3', date_added = '%4' WHERE song_path = '%5'").arg(currentPlaylist, songName, authorName, dateAdded, songPath)))
+    {
+        qDebug() << "Failed: " << query.lastError().text();
+    }
+
+    ui->songSlot->clearContents();
+    ui->songSlot->setRowCount(0);
+    query.exec(QString("SELECT * FROM %1").arg(currentPlaylist));
+    while (query.next())
+    {
+        QString durationText = changeDurationToText(query.value(4).toInt());
+
+        QList<QTableWidgetItem*> items = {
+            new QTableWidgetItem(query.value(1).toString()),
+            new QTableWidgetItem(query.value(2).toString()),
+            new QTableWidgetItem(query.value(3).toString()),
+            new QTableWidgetItem(durationText),
+        };
+
+        int rowCount = ui->songSlot->rowCount();
+        ui->songSlot->setRowCount(rowCount+1);
+        for (int column = 0; column < items.size(); ++column)
+        {
+            ui->songSlot->setItem(rowCount, column, items[column]);
+
+            // switch (column) {
+            // case 0: // Song Name
+            // items[column]->setData(songPathRole, query.value(0));  // Song path
+            // break;
+            // case 1: // Author/Artist Name
+            // items[column]->setData(songNameRole, query.value(1));  // Song name
+            // break;
+            // case 2: // Album (or additional data)
+            // items[column]->setData(authorNameRole, query.value(2));  // Author name
+            // break;
+            // case 3: // Duration
+            // items[column]->setData(dateAddedRole, query.value(4));  // Date added
+            // break;
+            // default:
+            // break;
+            // }
+
+
+            items[column]->setData(songPathRole, query.value(0));
+            // items[column]->setData(songNameRole, query.value(1));
+            // items[column]->setData(authorNameRole, query.value(2));
+            // items[column]->setData(dateAddedRole, query.value(3));
+        }
+
+    }
+
+}
 
 QString MainWindow::changeDurationToText(int durationMS)
 {
@@ -586,4 +706,3 @@ void MainWindow::on_loopComboBox_currentTextChanged(const QString &arg1)
     }
     qDebug() << loopMode;
 }
-

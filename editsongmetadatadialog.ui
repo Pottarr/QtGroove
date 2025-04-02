@@ -96,7 +96,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="newArtistInput">
+          <widget class="QLineEdit" name="newAuthorNameInput">
            <property name="maximumSize">
             <size>
              <width>200</width>
