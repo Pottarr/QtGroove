@@ -1,6 +1,12 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
+# Ignore all files and subdirectories in the Latex directory
+# ./Latex/**
+Latex/QtGroove.**
+!Latex/QtGroove.tex
+!Latex/QtGroove.pdf
+# ----------------------------------------------------------------------------
 # Ignore DataBase Directory
 ./db/*
 # ----------------------------------------------------------------------------
