@@ -87,6 +87,8 @@ private slots:
 
     void on_loopComboBox_currentTextChanged(const QString &arg1);
 
+    void on_playbackSpeedComboBox_currentTextChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");

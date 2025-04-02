@@ -301,6 +301,49 @@ color: rgb(255, 255, 255);</string>
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QComboBox" name="playbackSpeedComboBox">
+               <property name="font">
+                <font>
+                 <pointsize>9</pointsize>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="currentIndex">
+                <number>2</number>
+               </property>
+               <item>
+                <property name="text">
+                 <string>0.5x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>0.75x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1.25x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1.5x</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2x</string>
+                </property>
+               </item>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
