@@ -746,3 +746,11 @@ void MainWindow::on_loopComboBox_currentTextChanged(const QString &arg1)
     }
     qDebug() << loopMode;
 }
+
+void MainWindow::on_playbackSpeedComboBox_currentTextChanged(const QString &arg1)
+{
+    QString a = arg1;
+    float speed = a.removeLast().toFloat();
+    player->setPlaybackRate(speed);
+}
+
