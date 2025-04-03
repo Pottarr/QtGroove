@@ -10,13 +10,14 @@ MainWindow::MainWindow(QWidget *parent)
     createDBFile();
 
     ui->setupUi(this);
+    setWindowTitle("QtGroove");
+    setWindowIcon(QIcon(":/icons/QtGroove.ico"));
     initializePlaylist();
     player->setAudioOutput(audio);
     audio->setVolume(0.2);
     ui->volumeSlider->setValue(20);
     ui->volumeSlider->setSliderPosition(20);
-    ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    ui->stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
+    ui->playButton->setIcon(QIcon::fromTheme("media-playback-start"));
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_songProgressBar_valueChanged);
     connect(player, &QMediaPlayer::playingChanged, this, &MainWindow::changePlayButtonIcon);
     connect(player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status)
@@ -276,7 +277,7 @@ void MainWindow::on_songProgressBar_sliderReleased()
 
 void MainWindow::changePlayButtonIcon(bool playing)
 {
-    playing ? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause)) : ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    playing ?  ui->playButton->setIcon(QIcon::fromTheme("media-playback-pause")) : ui->playButton->setIcon(QIcon::fromTheme("media-playback-start"));
 }
 
 QString MainWindow::getSongWholeDuration()
@@ -284,10 +285,7 @@ QString MainWindow::getSongWholeDuration()
     QString result;
     int wholeDurMS = player->duration();
 
-    int min = wholeDurMS / 60000;
-    int sec = (wholeDurMS % 60000) / 1000;
-
-    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
+    result = changeDurationToText(wholeDurMS);
 
     return result;
 }
@@ -297,10 +295,7 @@ QString MainWindow::getSongCurrentDuration(int value)
     QString result;
     int currentDurMS = value;
 
-    int min = currentDurMS / 60000;
-    int sec = (currentDurMS % 60000) / 1000;
-
-    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
+    result = changeDurationToText(currentDurMS);
 
     return result;
 }
@@ -312,10 +307,7 @@ QString MainWindow::getSongLeftDuration(int value)
     int currentDurMS = value;
     int leftDurMS = wholeDurMS - currentDurMS;
 
-    int min = leftDurMS / 60000;
-    int sec = ((leftDurMS% 60000) / 1000);
-
-    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
+    result = changeDurationToText(leftDurMS);
 
     return result;
 }
@@ -415,28 +407,7 @@ void MainWindow::on_playlistSlot_itemDoubleClicked(QListWidgetItem *item)
         {
             ui->songSlot->setItem(rowCount, column, items[column]);
 
-            // switch (column) {
-            // case 0: // Song Name
-                // items[column]->setData(songPathRole, query.value(0));  // Song path
-                // break;
-            // case 1: // Author/Artist Name
-                // items[column]->setData(songNameRole, query.value(1));  // Song name
-                // break;
-            // case 2: // Album (or additional data)
-                // items[column]->setData(authorNameRole, query.value(2));  // Author name
-                // break;
-            // case 3: // Duration
-                // items[column]->setData(dateAddedRole, query.value(4));  // Date added
-                // break;
-            // default:
-                // break;
-            // }
-
-
             items[column]->setData(songPathRole, query.value(0));
-            // items[column]->setData(songNameRole, query.value(1));
-            // items[column]->setData(authorNameRole, query.value(2));
-            // items[column]->setData(dateAddedRole, query.value(3));
         }
 
     }
@@ -555,15 +526,11 @@ void MainWindow::showContextMenu(const QPoint &pos)
     QMenu contextMenu(tr("Song Slot Context Menu"), this);
     contextMenu.addAction("Edit song metadata", this, [this, row]()
     {
-        // QString songName = this->ui->songSlot->item(currentRow, 0)->data(songNameRole).toString();
-        // QString authorName = this->ui->songSlot->item(currentRow, 1)->data(authorNameRole).toString();
-        // QString dateAdded = this->ui->songSlot->item(currentRow, 2)->data(dateAddedRole).toString();
         QString songPath = this->ui->songSlot->item(row, 0)->data(songPathRole).toString();
         QString songName = this->ui->songSlot->item(row, 0)->text();  // Get song name
         QString authorName = this->ui->songSlot->item(row, 1)->text();  // Get author name
         QString dateAdded = this->ui->songSlot->item(row, 2)->text();  // Get author name
         EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this, songPath, songName, authorName, dateAdded);
-        // EditSongMetaDataDialog* dialog = new EditSongMetaDataDialog(this);
 
         connect(dialog, &EditSongMetaDataDialog::songMetaDataEdited, this, &MainWindow::editSongMetaData);
 
@@ -626,20 +593,6 @@ void MainWindow::showContextMenuPlaylist(const QPoint& pos)
 
 void MainWindow::editSongMetaData(QString &songPath, QString &songName, QString &authorName, QString &dateAdded)
 {
-    // query.prepare("UPDATE songs SET song_name = ':var1', author_name = ':var2', date_added = ':var3' WHERE song_path = ':var4'");
-    // query.prepare("UPDATE :var0 SET song_name = :var1, author_name = :var2, date_added = :var3 WHERE song_path = :var4");
-    // query.bindValue(":var0", currentPlaylist);
-    // query.bindValue(":var1", songName);
-    // query.bindValue(":var2", authorName);
-    // query.bindValue(":var3", dateAdded);
-    // query.bindValue(":var4", songPath);
-
-    // qDebug() << "UPDATE songs SET song_name =" << songName
-             // << ", author_name =" << authorName
-             // << ", date_added =" << dateAdded
-             // << "WHERE song_path =" << songPath;
-
-
     if (!query.exec(QString("UPDATE '%1' SET song_name = '%2', author_name = '%3', date_added = '%4' WHERE song_path = '%5'").arg(currentPlaylist, songName, authorName, dateAdded, songPath)))
     {
         qDebug() << "Failed: " << query.lastError().text();
@@ -665,28 +618,7 @@ void MainWindow::editSongMetaData(QString &songPath, QString &songName, QString 
         {
             ui->songSlot->setItem(rowCount, column, items[column]);
 
-            // switch (column) {
-            // case 0: // Song Name
-            // items[column]->setData(songPathRole, query.value(0));  // Song path
-            // break;
-            // case 1: // Author/Artist Name
-            // items[column]->setData(songNameRole, query.value(1));  // Song name
-            // break;
-            // case 2: // Album (or additional data)
-            // items[column]->setData(authorNameRole, query.value(2));  // Author name
-            // break;
-            // case 3: // Duration
-            // items[column]->setData(dateAddedRole, query.value(4));  // Date added
-            // break;
-            // default:
-            // break;
-            // }
-
-
             items[column]->setData(songPathRole, query.value(0));
-            // items[column]->setData(songNameRole, query.value(1));
-            // items[column]->setData(authorNameRole, query.value(2));
-            // items[column]->setData(dateAddedRole, query.value(3));
         }
 
     }
@@ -700,7 +632,13 @@ QString MainWindow::changeDurationToText(int durationMS)
     int min = durationMS / 60000;
     int sec = (durationMS % 60000) / 1000;
 
-    (sec / 10 == 0) ? result = QString("%1:0%2").arg(QString::number(min), QString::number(sec)) : result = QString("%1:%2").arg(QString::number(min), QString::number(sec));
+    QString minText;
+    QString secText;
+
+    (min / 10 == 0) ? minText = QString("0%1").arg(QString::number(min)) : minText = QString::number(min);
+    (sec / 10 == 0) ? secText = QString("0%1").arg(QString::number(sec)) : secText = QString::number(sec);
+
+    result = QString("%1:%2").arg(minText, secText);
 
     return result;
 }

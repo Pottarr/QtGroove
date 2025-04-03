@@ -5,12 +5,11 @@ CreatePlaylistDialog::CreatePlaylistDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::CreatePlaylistDialog)
 {
+
     ui->setupUi(this);
+    setWindowTitle("QtGroove: Create Playlist");
+    setWindowIcon(QIcon(":/icons/QtGroove.ico"));
     ui->playlistNameInput->setFocus();
-    // connect(this, &CreatePlaylistDialog::on_pushButton_clicked, parent, [this, parent]()
-    // {
-        // parent->createPlaylist(this->playlistName);
-    // });
 }
 
 CreatePlaylistDialog::~CreatePlaylistDialog()

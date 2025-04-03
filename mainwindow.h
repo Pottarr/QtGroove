@@ -28,6 +28,7 @@
 #include <QDateTime>
 #include <QMenu>
 #include <QModelIndex>
+#include <QIcon>
 #include <algorithm>
 #include <random>
 

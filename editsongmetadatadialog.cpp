@@ -5,7 +5,10 @@ EditSongMetaDataDialog::EditSongMetaDataDialog(QWidget *parent, const QString &s
     : QDialog(parent)
     , ui(new Ui::EditSongMetaDataDialog)
 {
+
     ui->setupUi(this);
+    setWindowTitle("QtGroove: Edit song metadata");
+    setWindowIcon(QIcon(":/icons/QtGroove.ico"));
     sameSongPath = songPath;
     this->ui->newSongNameInput->setText(songName);
     this->ui->newAuthorNameInput->setText(authorName);

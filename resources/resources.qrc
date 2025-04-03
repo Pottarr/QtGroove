@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/"/>
+    <qresource prefix="/icons">
+        <file>QtGroove.ico</file>
+    </qresource>
+</RCC>

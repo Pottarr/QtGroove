@@ -25,6 +25,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         createplaylistdialog.h createplaylistdialog.cpp createplaylistdialog.ui
         editsongmetadatadialog.h editsongmetadatadialog.cpp editsongmetadatadialog.ui
+        resources/resources.qrc
+
+
 
     )
 # Define target properties for Android with Qt 6 as:
