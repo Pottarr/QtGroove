@@ -13,3 +13,5 @@ QtGroove is a graphic-based music player written in C++ using the Qt framework. 
 - Shuffling
 - Volume Adjustment
 - Playback Speed Adjustment
+
+## [Documentation](./Latex/QtGroove.pdf)
