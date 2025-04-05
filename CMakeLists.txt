@@ -12,12 +12,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia Sql)
 
+if(WIN32)
+    set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/appicon/QtGroove.rc")
+endif()
+
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
 )
+
+set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/appicon/QtGroove.rc")
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(QtGroove
@@ -26,6 +33,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         createplaylistdialog.h createplaylistdialog.cpp createplaylistdialog.ui
         editsongmetadatadialog.h editsongmetadatadialog.cpp editsongmetadatadialog.ui
         resources/resources.qrc
+        ${app_icon_resource_windows}  # this will be empty on non-Windows
+
 
 
 
@@ -63,6 +72,7 @@ set_target_properties(QtGroove PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
 
 include(GNUInstallDirs)
 install(TARGETS QtGroove
