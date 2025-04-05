@@ -61,29 +61,13 @@ by providing and demonstrating the power of C++ in building efficience multi-pla
 \newpage
 
 % Abstract page
-\chapter*{Abstract (Waiting for finalization)}
+\chapter*{Abstract}
 
-\hspace{1cm}This project, titled RUSH: Rust Shell Terminal, presents the design and
-implementation of a command-line shell application developed in the Rust programming
-language. As part of the Elementary System Programming course in Software Engineering
-at KMITL, RUSH was created to develop a fast, and efficient custom shell using the
-Rust programming language that provide users with typical features found in standard
-command shells (such as Bash, Zsh, etc.), including executing programs, navigating
-directories, file management, environment management while utilizing Rust’s safety
-guarantees to minimize common security vulnerabilities.
-
-
-The project demonstrates a range of system programming concepts, including process
-management, command parsing, and file handling, showcasing the capabilities of Rust in
-building performant and secure applications. RUSH supports essential command-line
-functionalities such as a help system, history logging, and automatic configuration of
-necessary files, providing a user-friendly and highly customizable terminal experience.
-
-This work aims to contribute to the field of Software Engineering by offering a flexible
-and safe alternative to traditional shell interfaces, especially suited for developers
-seeking to understand system programming through the Rust language. The final outcome
-highlights Rust’s effectiveness in system software development, encouraging further
-exploration of Rust for similar high-performance applications.
+\hspace{1cm}This project, titled QtGroove, presents the design and implementation of a music player
+application developed in the C++ programming language with Qt GUI framework. As part of the
+Object Oriented Programming course in Software Engineering at KMITL, QtGroove was created to develop
+a user-friendly multi-platform music player in C++ programming language that provide users with typical
+features found in general music player.
 
 \newpage
 % Table of contents
@@ -117,91 +101,55 @@ products.
  
 \chapter{Project Overview}
 \section{Design}
-\subsection{asdf}
-\hspace{1cm}asdf
-\subsection{jkl;}
-\hspace{1cm}jkl;
-\subsection{qwerty}
-\hspace{1cm}qwerty
 
-% \begin{table}[ht]
-%     \centering
-%     \begin{tabularx}{\textwidth}{|X|X|X|}
-%         \hline
-%         \multicolumn{1}{|c|}{Command} & \multicolumn{1}{|c|}{Description} & \multicolumn{1}{|c|}{Usage} \\
-%         \hline
-%         \ttfamily{cd} & Change directory. & \ttfamily{cd <path>} \\
-%         \hline
-%         \ttfamily{clr} & Clear the terminal. & \ttfamily{clr} \\ 
-%         \hline
-%         \ttfamily{exit} & Exit the terminal & \ttfamily{exit} \\
-%         \hline
-%         \ttfamily{find} & Find phrase in a file. & \ttfamily{find <phrase> <file>} \\
-%         \hline
-%         \ttfamily{help} & Display help. & \ttfamily{help <command>} \\
-%         \hline
-%         \ttfamily{log} & Show command history. & \ttfamily{log} \\
-%         \hline
-%         \ttfamily{ls} & List files and directories. & \ttfamily{ls} \\
-%         \hline
-%         \ttfamily{meow} & Concatenate file and print \newline to standard output & \ttfamily{meow <file1> <file2> \newline <file3>...} \\
-%         \hline
-%         \ttfamily{mkdir} & Create a directory. & \ttfamily{mkdir <directory>} \\ 
-%         \hline
-%         \ttfamily{mkfile} & Create a file. & \ttfamily{mkfile <file>} \\
-%         \hline
-%         \ttfamily{shout} & Print a message. & \ttfamily{shout <message>} \\
-%         \hline
-%     \end{tabularx}
-% \end{table}
+\subsection{Program Overview}
+
+
+\hspace{1cm}We have 3 main sections in our application.
+
+
+\includegraphics[width=0.6\textwidth]{images/app_overview.png} % Adjust width as needed
+
+And here are our buttons.
+
+\includegraphics[height=0.25\textwidth]{images/btns.png} % Adjust width as needed
 
 \newpage
 
 \section{Database}
 
-\hspace{1cm}DB
+\hspace{1cm}We use SQLite for our database.
 
 \subsection{playlist.db}
 
-\hspace{1cm}playlist.db
+\hspace{1cm}We created playlist.db in the 'db' directory and that file will
+be our main database file.
 
-% \begin{enumerate}
-%     \item $|$ (Piping): Insert the returned value from the previous command to the next command.
-%     \item Redirecting
-%     \begin{enumerate}
-%         \item $>$ :  Sends the command’s output to a file, overwriting it if the file exists.
-%         \item $>>$ : Sends the output to a file, appending to it if the file exists.
-%     \end{enumerate}
-% \end{enumerate}
+Our 'playlist.db' has default table named 'playlists' to keep track about our playlists'
+existences
 
-% \subsection{History Log}
+\includegraphics[width=0.7\textwidth]{images/tables.png} % Adjust width as needed
 
-% \hspace{1cm}RUSH provides a built-in history log system which stores recently executed commands.
-% The history log file (rush.log) is located in:
+And in each playlists has their own columns which store the data.
 
-% \vspace{0.5cm}
+\includegraphics[height=0.1\textwidth]{images/cols.png} % Adjust width as needed
 
-% For Windows: \verb|OS_DRIVE:\Users\USERNAME\.rush\rush.log|
+\newpage
 
-% For Unix Based OS: \verb|~/.rush/rush.log|
-
-
-% Chapter 3: Installation and Execution Guide
 \chapter{Installation and Execution Guide}
 \section{Git Clone from the Remote Repository}
 \begin{lstlisting}[language=Bash ,basicstyle=\footnotesize\ttfamily]
 git clone https://github.com/Pottarr/QtGroove.git
-cd QtGroove
 \end{lstlisting}
 
-% \lipsum[5] % Placeholder text for literature review section
+After that open project in Qt Creator, and run the program.
 
-\section{Build and Run the program (Waiting for finalization)}
-\begin{lstlisting}[language=Bash ,basicstyle=\footnotesize\ttfamily]
-cargo build
-cargo run
-\end{lstlisting}
-% \lipsum[6] % Placeholder text for related studies
+\section{Alternative way for Windows users}
+
+\hspace{1cm}You can download pre-release version (v0.1) from GitHub too.
+(Link in Appendix)
+
+
 
 % Chapter 4: Summary
 \chapter{Summary}
@@ -229,8 +177,8 @@ cargo run
 
 \chapter{Appendix}
 
-\section{Demonstration Video}
-% \url{https://www.canva.com/design/DAGVhiWupX4/L_cscDEmChqqI4FdjnQ26Q/view?utm_content=DAGVhiWupX4&utm_campaign=designshare&utm_medium=link&utm_source=editor}
+\section{Github Repository}
+\url{https://github/Pottarr/QtGroove}
 % \newpage
 
 \end{document}
